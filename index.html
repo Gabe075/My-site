@@ -8,36 +8,39 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <h1>Lite ApkMod Jogos <i class="fas fa-gamepad"></i></h1>
-    </div>
+        <nav class="nav">
+            <a href="index.html" class="nav-item"><i class="fas fa-home"></i> Home</a>
+            <a href="sobre.html" class="nav-item"><i class="fas fa-info-circle"></i> Sobre</a>
+            <a href="contato.html" class="nav-item"><i class="fas fa-envelope"></i> Contato</a>
+        </nav>
+    </header>
 
-    <div class="nav">
-        <a href="index.html"><i class="fas fa-home"></i> Home</a>
-        <a href="sobre.html"><i class="fas fa-info-circle"></i> Sobre</a>
-        <a href="contato.html"><i class="fas fa-envelope"></i> Contato</a>
-    </div>
+    <main class="game-section">
+        <div class="game-grid" id="game-list">
+            <!-- Os jogos serão adicionados dinamicamente aqui -->
+        </div>
+    </main>
 
-    <div class="game-container" id="game-list">
-        <!-- Os jogos serão adicionados dinamicamente aqui -->
-    </div>
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <h3><i class="fas fa-user"></i> Quem sou eu</h3>
+            <p>Gabe</p>
+            <p>As mais lindas palavras de amor são ditas no silêncio de um olhar</p>
+            <h3><i class="fas fa-book"></i> Sobre o Blog</h3>
+            <p>Um espaço para jogos casuais e divertidos!</p>
+            <h3><i class="fas fa-link"></i> Links Úteis</h3>
+            <ul>
+                <li><a href="sobre.html">Sobre</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </div>
+    </aside>
 
-    <div class="sidebar">
-        <h3><i class="fas fa-user"></i> Quem sou eu</h3>
-        <p>Gabe</p>
-        <p>As mais lindas palavras de amor são ditas no silêncio de um olhar</p>
-        <h3><i class="fas fa-book"></i> Sobre o Blog</h3>
-        <p>Um espaço para jogos casuais e divertidos!</p>
-        <h3><i class="fas fa-link"></i> Links Úteis</h3>
-        <ul>
-            <li><a href="sobre.html">Sobre</a></li>
-            <li><a href="contato.html">Contato</a></li>
-        </ul>
-    </div>
-
-    <div class="footer">
+    <footer class="footer">
         <p>(c) Lite ApkMod Jogos 2025 <i class="fas fa-heart"></i></p>
-    </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
