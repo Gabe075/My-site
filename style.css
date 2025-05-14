@@ -21,6 +21,10 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     border-radius: 0 0 15px 15px;
     animation: fadeIn 1s ease-in;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
 }
 .header h1 {
     font-size: 2.2em;
@@ -30,6 +34,7 @@ body {
     gap: 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     font-weight: 600;
+    margin: 0;
 }
 .header i { animation: pulse 1.5s infinite; }
 .nav {
@@ -41,6 +46,7 @@ body {
     margin-top: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    flex-wrap: wrap;
 }
 .nav-item {
     color: #fff;
@@ -57,6 +63,16 @@ body {
     transform: translateY(-2px);
 }
 .nav-item i { margin-right: 10px; }
+.hamburger {
+    display: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 10px;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
 .game-section {
     flex: 1;
     padding: 30px 20px;
@@ -106,10 +122,19 @@ body {
     position: sticky;
     top: 100px;
     align-self: flex-start;
+    display: none; /* Oculto por padrão em mobile */
 }
 .sidebar-content {
     max-height: 70vh;
     overflow-y: auto;
+}
+.sidebar.open {
+    display: block; /* Mostra a sidebar ao abrir */
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 1000;
 }
 .sidebar h3 {
     font-size: 1.5em;
@@ -178,7 +203,7 @@ body {
     }
     .header { grid-area: header; }
     .game-section { grid-area: main; padding: 40px; }
-    .sidebar { grid-area: sidebar; margin: 30px; }
+    .sidebar { grid-area: sidebar; margin: 30px; display: block; } /* Mostra sidebar em desktop */
     .footer { grid-area: footer; }
     .header h1 { font-size: 2.5em; }
     .nav-item { font-size: 1.3em; padding: 12px 25px; }
@@ -186,8 +211,11 @@ body {
     .game-card h2 { font-size: 1.5em; }
     .sidebar h3 { font-size: 1.7em; }
     .sidebar-content { max-height: 80vh; }
+    .hamburger { display: none; } /* Oculta hambúrguer em desktop */
 }
 @media (max-width: 767px) {
+    .nav { display: none; } /* Oculta nav principal em mobile */
+    .hamburger { display: block; } /* Mostra hambúrguer em mobile */
     .sidebar {
         position: fixed;
         top: 0;
@@ -197,7 +225,5 @@ body {
         z-index: 1000;
     }
     .sidebar.open { left: 0; }
-    .nav { flex-direction: column; padding: 10px; }
-    .nav-item { width: 100%; text-align: center; margin: 5px 0; }
     .game-section { padding: 20px 10px; }
 }
