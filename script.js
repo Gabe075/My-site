@@ -19,3 +19,17 @@ function carregarJogos() {
 
 // Carrega os jogos ao iniciar a página
 window.onload = carregarJogos;
+
+// Controle da sidebar mobile
+const sidebar = document.querySelector('.sidebar');
+const hamburger = document.createElement('div');
+hamburger.className = 'hamburger';
+hamburger.innerHTML = '☰';
+hamburger.addEventListener('click', () => sidebar.classList.toggle('open'));
+document.body.insertBefore(hamburger, document.querySelector('.game-section'));
+
+document.addEventListener('click', (event) => {
+    if (!event.target.closest('.sidebar') && !event.target.closest('.hamburger') && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+    }
+});
