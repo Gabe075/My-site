@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Memória 4x4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in;
+            max-width: 400px;
+            width: 90%;
+            margin: 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 5px;
+            margin: 20px auto;
+            position: relative;
+            width: 330px; /* 4 * 80px + 3 * 5px (gaps) */
+            height: 330px;
+        }
+        .card {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border-radius: 10px;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.4s ease, background 0.2s ease;
+            color: #333;
+            position: absolute;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            background: #e0e0e0;
+        }
+        .card.flipped, .card.matched {
+            background: #ccc;
+            transform: rotateY(180deg);
+        }
+        .card:not(.flipped):not(.matched) {
+            transform: rotateY(0deg);
+        }
+        .hamburger {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 2000;
+            color: #fff;
+            transition: transform 0.3s;
+        }
+        .hamburger:hover {
+            transform: rotate(90deg);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #2c3e50;
+            color: #fff;
+            transition: left 0.3s ease-in-out;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .sidebar a {
+            display: block;
+            color: #fff;
+            padding: 15px;
+            text-decoration: none;
+            font-size: 1.1em;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: background 0.2s;
+        }
+        .sidebar a:hover {
+            background: #34495e;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transform: scale(0.7);
+            animation: zoomIn 0.3s forwards;
+        }
+        @keyframes zoomIn {
+            to { transform: scale(1); }
+        }
+        .modal-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #6e8efb;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .modal-content button:hover {
+            transform: scale(1.05);
+            background: #a777e3;
+        }
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 25px;
+            cursor: pointer;
+            color: #333;
+        }
+        #moves {
+            margin: 20px 0;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: repeat(4, 60px);
+                width: 245px; /* 4 * 60px + 3 * 5px */
+                height: 245px;
+            }
+            .card {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hamburger">☰</div>
+    <div class="sidebar" id="sidebar">
+        <a onclick="startGame()">🔄 Novo Jogo</a>
+    </div>
+
+    <div class="container">
+        <h1>Jogo da Memória</h1>
+        <div id="moves">Jogadas: 0</div>
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="startModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('startModal')">×</span>
+            <h2>Jogo da Memória</h2>
+            <p>Encontre todos os pares!</p>
+            <button onclick="startGame()">Iniciar</button>
+        </div>
+    </div>
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('winModal')">×</span>
+            <h2>Parabéns!</h2>
+            <p>Jogadas: <span id="finalMoves"></span></p>
+            <button onclick="startGame()">Novo Jogo</button>
+        </div>
+    </div>
+
+    <script>
+        const emojis = ['😀', '😺', '🌟', '🍎', '🚗', '🎸', '🏀', '🍕'];
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        const grid = document.getElementById('grid');
+        const movesDisplay = document.getElementById('moves');
+        const tileSize = window.innerWidth <= 600 ? 60 : 80; // Ajuste para telas menores
+        const gap = 5;
+
+        // Inicializar modal de início
+        document.getElementById('startModal').style.display = 'flex';
+
+        // Sidebar e eventos
+        const hamburger = document.querySelector('.hamburger');
+        const sidebar = document.getElementById('sidebar');
+        hamburger.addEventListener('click', () => sidebar.classList.toggle('open'));
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('#sidebar') && !event.target.closest('.hamburger') && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            sidebar.classList.remove('open');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function startGame() {
+            // Fechar todos os modais
+            document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+            // Resetar estados
+            grid.innerHTML = '';
+            cards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            movesDisplay.textContent = `Jogadas: ${moves}`;
+
+            // Criar cartas com posições iniciais para animação
+            const gameEmojis = [...emojis, ...emojis].sort(() => 0.5 - Math.random());
+            gameEmojis.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+                const row = Math.floor(index / 4);
+                const col = index % 4;
+                card.style.left = `${col * (tileSize + gap)}px`; // 80px (card) + 5px (gap) ou 60px + 5px
+                card.style.top = `${row * (tileSize + gap)}px`;
+                card.addEventListener('click', flipCard);
+                grid.appendChild(card);
+                cards.push({ element: card, emoji: emoji, flipped: false, matched: false });
+            });
+        }
+
+        function flipCard() {
+            const index = parseInt(this.dataset.index);
+            if (cards[index].flipped || cards[index].matched || flippedCards.length >= 2) return;
+
+            cards[index].flipped = true;
+            cards[index].element.classList.add('flipped');
+            cards[index].element.textContent = cards[index].emoji;
+            flippedCards.push(cards[index]);
+
+            if (flippedCards.length === 2) {
+                moves++;
+                movesDisplay.textContent = `Jogadas: ${moves}`;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            if (card1.emoji === card2.emoji) {
+                card1.matched = card2.matched = true;
+                card1.element.classList.add('matched');
+                card2.element.classList.add('matched');
+                matchedPairs++;
+                flippedCards = [];
+                if (matchedPairs === 8) {
+                    document.getElementById('finalMoves').textContent = moves;
+                    document.getElementById('winModal').style.display = 'flex';
+                }
+            } else {
+                setTimeout(() => {
+                    card1.flipped = card2.flipped = false;
+                    card1.element.classList.remove('flipped');
+                    card2.element.classList.remove('flipped');
+                    card1.element.textContent = '';
+                    card2.element.textContent = '';
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
