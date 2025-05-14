@@ -1,14 +1,12 @@
-// Lista de jogos com títulos personalizados
 const jogos = [
     { nome: "Jogo da Memória", pasta: "jogo-da-memoria" },
     { nome: "Quebra-Cabeça", pasta: "quebra-cabeca" }
-    // Adicione novos jogos aqui, ex.: { nome: "Novo Jogo", pasta: "novo-jogo" }
+    // Adicione novos jogos aqui
 ];
 
-// Função para exibir os jogos na página
 function carregarJogos() {
     const gameList = document.getElementById("game-list");
-    gameList.innerHTML = ""; // Limpa a lista antes de recarregar
+    gameList.innerHTML = "";
     jogos.forEach(jogo => {
         const gameCard = document.createElement("div");
         gameCard.className = "game-card";
@@ -17,17 +15,12 @@ function carregarJogos() {
     });
 }
 
-// Carrega os jogos ao iniciar a página
 window.onload = carregarJogos;
 
 // Controle da sidebar mobile
 const sidebar = document.querySelector('.sidebar');
-const hamburger = document.createElement('div');
-hamburger.className = 'hamburger';
-hamburger.innerHTML = '☰';
+const hamburger = document.querySelector('.hamburger');
 hamburger.addEventListener('click', () => sidebar.classList.toggle('open'));
-document.body.insertBefore(hamburger, document.querySelector('.game-section'));
-
 document.addEventListener('click', (event) => {
     if (!event.target.closest('.sidebar') && !event.target.closest('.hamburger') && sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
