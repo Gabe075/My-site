@@ -1,7 +1,7 @@
 // Lista de pastas de jogos (atualize manualmente ao adicionar novos jogos)
 const jogos = [
-    { nome: "Jogo da Memória", pasta: "jogo-da-memoria" },
-    { nome: "Quebra-Cabeça", pasta: "quebra-cabeca" }
+    { nome: "index", pasta: "jogo-da-memoria" },
+    { nome: "index", pasta: "quebra-cabeca" }
     // Adicione novos jogos aqui, ex.: { nome: "Novo Jogo", pasta: "novo-jogo" }
 ];
 
