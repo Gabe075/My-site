@@ -1,13 +1,14 @@
-// Lista de pastas de jogos (atualize manualmente ao adicionar novos jogos)
+// Lista de jogos com títulos personalizados
 const jogos = [
-    { nome: "index", pasta: "jogo-da-memoria" },
-    { nome: "index", pasta: "quebra-cabeca" }
+    { nome: "Jogo da Memória", pasta: "jogo-da-memoria" },
+    { nome: "Quebra-Cabeça", pasta: "quebra-cabeca" }
     // Adicione novos jogos aqui, ex.: { nome: "Novo Jogo", pasta: "novo-jogo" }
 ];
 
 // Função para exibir os jogos na página
 function carregarJogos() {
     const gameList = document.getElementById("game-list");
+    gameList.innerHTML = ""; // Limpa a lista antes de recarregar
     jogos.forEach(jogo => {
         const gameCard = document.createElement("div");
         gameCard.className = "game-card";
