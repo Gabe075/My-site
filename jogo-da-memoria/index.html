@@ -74,13 +74,16 @@
         .card.flipped, .card.matched {
             background: #ccc;
             transform: rotateY(180deg);
+            transition: transform 0.4s ease, background 0.2s ease;
         }
         .card:not(.flipped):not(.matched) {
             transform: rotateY(0deg);
+            transition: transform 0.4s ease, background 0.2s ease;
         }
         .card.initial-show {
             transform: rotateY(180deg);
             background: #ccc;
+            transition: transform 0.4s ease, background 0.2s ease;
         }
         .hamburger {
             position: fixed;
@@ -201,7 +204,7 @@
 <body>
     <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
-        <a onclick="startGame()">🔄 Novo Jogo</a>
+        <a onclick="resetAndShowStartModal()">🔄 Novo Jogo</a>
     </div>
 
     <div class="container">
@@ -224,12 +227,20 @@
             <span class="close" onclick="closeModal('winModal')">×</span>
             <h2>Parabéns!</h2>
             <p>Jogadas: <span id="finalMoves"></span></p>
-            <button onclick="startGame()">Novo Jogo</button>
+            <button onclick="resetAndShowStartModal()">Novo Jogo</button>
         </div>
     </div>
 
     <script>
-        const emojis = ['😀', '😺', '🌟', '🍎', '🚗', '🎸', '🏀', '🍕'];
+        const allEmojis = [
+            '😀', '😂', '😎', '🤓', '😺', '🐶', '🌟', '⭐', '🌙', '🌞',
+            '🍎', '🍌', '🍇', '🍉', '🍓', '🍕', '🍔', '🌮', '🌭', '🍫',
+            '🚗', '🚲', '✈️', '🚀', '⛵', '🎸', '🎹', '🎺', '🎮', '🎯',
+            '🏀', '⚽', '🏈', '🎱', '🎲', '🎴', '🌳', '🌴', '🌷', '🌹',
+            '🍀', '🌻', '🍁', '🎄', '🎆', '🎇', '💎', '💰', '💡', '🔧',
+            '🔨', '⏰', '⏳', '📱', '💻', '📸', '🎥', '🎧', '🔊', '🎤',
+            '🎸', '🎻', '🎷', '🥁', '🎬', '🎭'
+        ];
         let cards = [];
         let flippedCards = [];
         let matchedPairs = 0;
@@ -261,9 +272,21 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
+        function resetAndShowStartModal() {
+            // Resetar o tabuleiro imediatamente
+            grid.innerHTML = '';
+            cards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            movesDisplay.textContent = `Jogadas: ${moves}`;
+            closeModal('winModal'); // Fechar winModal se aberto
+            openModal('startModal'); // Mostrar o modal de início
+        }
+
         function startGame() {
-            // Fechar todos os modals
-            document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+            // Fechar o modal de início automaticamente
+            closeModal('startModal');
             // Resetar estados
             grid.innerHTML = '';
             cards = [];
@@ -272,8 +295,18 @@
             moves = 0;
             movesDisplay.textContent = `Jogadas: ${moves}`;
 
+            // Selecionar 8 emojis aleatórios (16 no total para pares)
+            const selectedEmojis = [];
+            while (selectedEmojis.length < 8) {
+                const randomIndex = Math.floor(Math.random() * allEmojis.length);
+                const emoji = allEmojis[randomIndex];
+                if (!selectedEmojis.includes(emoji)) {
+                    selectedEmojis.push(emoji);
+                }
+            }
+            const gameEmojis = [...selectedEmojis, ...selectedEmojis].sort(() => 0.5 - Math.random());
+
             // Criar cartas com posições iniciais para animação
-            const gameEmojis = [...emojis, ...emojis].sort(() => 0.5 - Math.random());
             gameEmojis.forEach((emoji, index) => {
                 const card = document.createElement('div');
                 card.classList.add('card');
@@ -288,7 +321,7 @@
                 cards.push({ element: card, emoji: emoji, flipped: false, matched: false });
             });
 
-            // Mostrar todas as cartas por 3 segundos
+            // Mostrar todas as cartas por 3 segundos com animação
             cards.forEach(card => {
                 card.element.classList.add('initial-show');
                 card.element.textContent = card.emoji;
