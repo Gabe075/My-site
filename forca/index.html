@@ -72,7 +72,8 @@
         .key {
             width: 40px;
             height: 40px;
-            background: #fff;
+            background: #e0e0e0; /* Fundo cinza claro */
+            color: #000; /* Letras pretas */
             border-radius: 5px;
             display: flex;
             align-items: center;
@@ -83,10 +84,11 @@
             transition: background 0.2s ease;
         }
         .key:hover {
-            background: #e0e0e0;
+            background: #d0d0d0; /* Tom mais escuro ao passar o mouse */
         }
         .key.disabled {
-            background: #ccc;
+            background: #a0a0a0; /* Tom mais escuro para desativadas */
+            color: #444; /* Letras mais claras para desativadas */
             cursor: not-allowed;
         }
         .hamburger {
