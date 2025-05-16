@@ -1,10 +1,9 @@
 const jogos = [
     { nome: "Jogo da Memória", pasta: "jogo-da-memoria" },
-    { nome: "Quebra-Cabeça", pasta: "quebra-cabeca" }
-    { nome: "damas", pasta: "damas" }
-    { nome: "forca", pasta: "forca" }
-    { nome: "jogo da velha", pasta: "jogo da velha" }
-  
+    { nome: "Quebra-Cabeça", pasta: "quebra-cabeca" },
+    { nome: "damas", pasta: "damas" },
+    { nome: "forca", pasta: "forca" },
+    { nome: "jogo da velha", pasta: "jogo da velha" },
    // Adicione novos jogos aqui
 ];
 
