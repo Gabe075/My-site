@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Memória 4x4</title>
+    <title>Jogo da Velha</title>
     <style>
         * {
             margin: 0;
@@ -41,49 +41,33 @@
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 80px);
+        #game-message {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+        #board {
+            display: none;
+            grid-template-columns: repeat(3, 100px);
             gap: 5px;
             margin: 20px auto;
-            position: relative;
-            width: 330px; /* 4 * 80px + 3 * 5px (gaps) */
-            height: 330px;
+            width: 310px;
+            height: 310px;
         }
-        .card {
-            width: 80px;
-            height: 80px;
+        .cell {
+            width: 100px;
+            height: 100px;
             background: #fff;
             border-radius: 10px;
-            font-size: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 40px;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.4s ease, background 0.2s ease;
-            color: #333;
-            position: absolute;
-            perspective: 1000px;
-            transform-style: preserve-3d;
+            transition: background 0.2s ease;
         }
-        .card:hover {
-            transform: scale(1.05);
+        .cell:hover {
             background: #e0e0e0;
-        }
-        .card.flipped, .card.matched {
-            background: #ccc;
-            transform: rotateY(180deg);
-            transition: transform 0.4s ease, background 0.2s ease;
-        }
-        .card:not(.flipped):not(.matched) {
-            transform: rotateY(0deg);
-            transition: transform 0.4s ease, background 0.2s ease;
-        }
-        .card.initial-show {
-            transform: rotateY(180deg);
-            background: #ccc;
-            transition: transform 0.4s ease, background 0.2s ease;
         }
         .hamburger {
             position: fixed;
@@ -113,7 +97,7 @@
         .sidebar.open {
             left: 0;
         }
-        .sidebar a {
+        .sidebar select, .sidebar button {
             display: block;
             color: #fff;
             padding: 15px;
@@ -122,9 +106,29 @@
             border-radius: 5px;
             margin: 5px 0;
             transition: background 0.2s;
+            background: none;
+            border: 1px solid #fff;
+            width: 100%;
+            text-align: left;
         }
-        .sidebar a:hover {
+        .sidebar select:hover, .sidebar button:hover {
             background: #34495e;
+        }
+        .emoji-picker {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .emoji-picker span {
+            margin-right: 10px;
+        }
+        .emoji-picker input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #fff;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 100px;
         }
         .modal {
             display: none;
@@ -133,70 +137,97 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 3000;
             justify-content: center;
             align-items: center;
         }
         .modal-content {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 20px;
             max-width: 500px;
             width: 90%;
             text-align: center;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            transform: scale(0.7);
-            animation: zoomIn 0.3s forwards;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transform: scale(0.5);
+            animation: popIn 0.5s ease-out forwards;
+            color: #fff;
         }
-        @keyframes zoomIn {
-            to { transform: scale(1); }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-content h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .modal-content p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
         }
         .modal-content button {
-            margin: 10px;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 5px;
-            background: #6e8efb;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
             color: #fff;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            font-size: 1em;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         .modal-content button:hover {
-            transform: scale(1.05);
-            background: #a777e3;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         .close {
             position: absolute;
             top: 15px;
             right: 20px;
-            font-size: 25px;
+            font-size: 30px;
             cursor: pointer;
-            color: #333;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
         }
-        #moves {
-            margin: 20px 0;
-            font-size: 1.1em;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 5px;
+        .close:hover {
+            transform: rotate(90deg);
         }
         @media (max-width: 600px) {
-            .grid {
-                grid-template-columns: repeat(4, 60px);
-                width: 245px; /* 4 * 60px + 3 * 5px */
-                height: 245px;
-            }
-            .card {
-                width: 60px;
-                height: 60px;
-                font-size: 30px;
-            }
             h1 {
                 font-size: 1.8em;
             }
             .container {
                 padding: 15px;
+            }
+            #board {
+                grid-template-columns: repeat(3, 80px);
+                width: 250px;
+                height: 250px;
+            }
+            .cell {
+                width: 80px;
+                height: 80px;
+                font-size: 30px;
+            }
+            .modal-content {
+                padding: 20px;
+            }
+            .modal-content h2 {
+                font-size: 1.5em;
+            }
+            .modal-content p {
+                font-size: 1em;
+            }
+            .modal-content button {
+                padding: 10px 20px;
+                font-size: 0.9em;
             }
         }
     </style>
@@ -204,54 +235,59 @@
 <body>
     <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
-        <a onclick="resetAndShowStartModal()">🔄 Novo Jogo</a>
+        <select id="gameMode" onchange="updateGameMode()">
+            <option value="">Escolher Modo</option>
+            <option value="ai">Contra IA</option>
+            <option value="local">Local (Mesmo Dispositivo)</option>
+        </select>
+        <div id="aiDifficulty" style="display: none;">
+            <select id="difficulty" onchange="updateDifficulty()">
+                <option value="easy">Fácil</option>
+                <option value="medium">Médio</option>
+                <option value="hard">Difícil</option>
+            </select>
+        </div>
+        <div class="emoji-picker">
+            <span>Jogador 1:</span>
+            <input id="player1Emoji" type="text" value="❌" maxlength="2" oninput="updateEmojis()">
+        </div>
+        <div class="emoji-picker">
+            <span>Jogador 2/IA:</span>
+            <input id="player2Emoji" type="text" value="⭕" maxlength="2" oninput="updateEmojis()">
+        </div>
     </div>
 
     <div class="container">
-        <h1>Jogo da Memória</h1>
-        <div id="moves">Jogadas: 0</div>
-        <div class="grid" id="grid"></div>
+        <h1>Jogo da Velha</h1>
+        <div id="game-message">Escolha o modo de jogo na barra lateral para começar!</div>
+        <div id="board"></div>
     </div>
 
     <!-- Modals -->
-    <div class="modal" id="startModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('startModal')">×</span>
-            <h2>Jogo da Memória</h2>
-            <p>Encontre todos os pares! As cartas serão mostradas por 3 segundos.</p>
-            <button onclick="startGame()">Iniciar</button>
-        </div>
-    </div>
     <div class="modal" id="winModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('winModal')">×</span>
             <h2>Parabéns!</h2>
-            <p>Jogadas: <span id="finalMoves"></span></p>
-            <button onclick="resetAndShowStartModal()">Novo Jogo</button>
+            <p id="winMessage"></p>
+            <button onclick="resetGame()">Novo Jogo</button>
+        </div>
+    </div>
+    <div class="modal" id="drawModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('drawModal')">×</span>
+            <h2>Empate!</h2>
+            <p>O jogo terminou em empate.</p>
+            <button onclick="resetGame()">Novo Jogo</button>
         </div>
     </div>
 
     <script>
-        const allEmojis = [
-            '😀', '😂', '😎', '🤓', '😺', '🐶', '🌟', '⭐', '🌙', '🌞',
-            '🍎', '🍌', '🍇', '🍉', '🍓', '🍕', '🍔', '🌮', '🌭', '🍫',
-            '🚗', '🚲', '✈️', '🚀', '⛵', '🎸', '🎹', '🎺', '🎮', '🎯',
-            '🏀', '⚽', '🏈', '🎱', '🎲', '🎴', '🌳', '🌴', '🌷', '🌹',
-            '🍀', '🌻', '🍁', '🎄', '🎆', '🎇', '💎', '💰', '💡', '🔧',
-            '🔨', '⏰', '⏳', '📱', '💻', '📸', '🎥', '🎧', '🔊', '🎤',
-            '🎸', '🎻', '🎷', '🥁', '🎬', '🎭'
-        ];
-        let cards = [];
-        let flippedCards = [];
-        let matchedPairs = 0;
-        let moves = 0;
-        const grid = document.getElementById('grid');
-        const movesDisplay = document.getElementById('moves');
-        const tileSize = window.innerWidth <= 600 ? 60 : 80; // Ajuste para telas menores
-        const gap = 5;
-
-        // Inicializar modal de início
-        document.getElementById('startModal').style.display = 'flex';
+        let board = Array(9).fill(null);
+        let currentPlayer = 'X';
+        let gameMode = '';
+        let difficulty = 'easy';
+        let player1Emoji = '❌';
+        let player2Emoji = '⭕';
 
         // Sidebar e eventos
         const hamburger = document.querySelector('.hamburger');
@@ -272,106 +308,180 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        function resetAndShowStartModal() {
-            // Resetar o tabuleiro imediatamente
-            grid.innerHTML = '';
-            cards = [];
-            flippedCards = [];
-            matchedPairs = 0;
-            moves = 0;
-            movesDisplay.textContent = `Jogadas: ${moves}`;
-            closeModal('winModal'); // Fechar winModal se aberto
-            openModal('startModal'); // Mostrar o modal de início
+        function updateGameMode() {
+            gameMode = document.getElementById('gameMode').value;
+            document.getElementById('aiDifficulty').style.display = gameMode === 'ai' ? 'block' : 'none';
+            document.getElementById('game-message').style.display = 'none';
+            document.getElementById('board').style.display = 'grid';
+            resetGame();
         }
 
-        function startGame() {
-            // Fechar o modal de início automaticamente
-            closeModal('startModal');
-            // Resetar estados
-            grid.innerHTML = '';
-            cards = [];
-            flippedCards = [];
-            matchedPairs = 0;
-            moves = 0;
-            movesDisplay.textContent = `Jogadas: ${moves}`;
+        function updateDifficulty() {
+            difficulty = document.getElementById('difficulty').value;
+            resetGame();
+        }
 
-            // Selecionar 8 emojis aleatórios (16 no total para pares)
-            const selectedEmojis = [];
-            while (selectedEmojis.length < 8) {
-                const randomIndex = Math.floor(Math.random() * allEmojis.length);
-                const emoji = allEmojis[randomIndex];
-                if (!selectedEmojis.includes(emoji)) {
-                    selectedEmojis.push(emoji);
+        function updateEmojis() {
+            player1Emoji = document.getElementById('player1Emoji').value || '❌';
+            player2Emoji = document.getElementById('player2Emoji').value || '⭕';
+            resetGame();
+        }
+
+        function createBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.addEventListener('click', () => makeMove(i));
+                boardElement.appendChild(cell);
+            }
+        }
+
+        function makeMove(index) {
+            if (board[index] || checkWinner()) return;
+
+            board[index] = currentPlayer;
+            updateBoard();
+            if (checkWinner()) {
+                document.getElementById('winMessage').textContent = `Jogador ${currentPlayer === 'X' ? '1' : gameMode === 'ai' ? 'IA' : '2'} (${currentPlayer === 'X' ? player1Emoji : player2Emoji}) venceu!`;
+                openModal('winModal');
+                return;
+            }
+            if (board.every(cell => cell)) {
+                openModal('drawModal');
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            if (gameMode === 'ai' && currentPlayer === 'O') {
+                setTimeout(makeAIMove, 500);
+            }
+        }
+
+        function updateBoard() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                cell.textContent = board[index] === 'X' ? player1Emoji : board[index] === 'O' ? player2Emoji : '';
+            });
+        }
+
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Linhas
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Colunas
+                [0, 4, 8], [2, 4, 6] // Diagonais
+            ];
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                return board[a] && board[a] === board[b] && board[a] === board[c];
+            });
+        }
+
+        function makeAIMove() {
+            let move;
+            const randomChance = Math.random();
+            if (difficulty === 'easy' && randomChance < 0.7) {
+                move = getRandomMove();
+            } else if (difficulty === 'medium' && randomChance < 0.3) {
+                move = getRandomMove();
+            } else {
+                move = minimax(board, 'O').index;
+            }
+            makeMove(move);
+        }
+
+        function getRandomMove() {
+            const availableMoves = board
+                .map((cell, index) => (cell === null ? index : null))
+                .filter(index => index !== null);
+            return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+        }
+
+        function minimax(newBoard, player) {
+            const availableSpots = newBoard
+                .map((cell, index) => (cell === null ? index : null))
+                .filter(index => index !== null);
+
+            if (checkWinnerFor(newBoard, 'X')) return { score: -10 };
+            if (checkWinnerFor(newBoard, 'O')) return { score: 10 };
+            if (availableSpots.length === 0) return { score: 0 };
+
+            const moves = [];
+            for (let i = 0; i < availableSpots.length; i++) {
+                const move = {};
+                move.index = availableSpots[i];
+                newBoard[availableSpots[i]] = player;
+
+                if (player === 'O') {
+                    const result = minimax(newBoard, 'X');
+                    move.score = result.score;
+                } else {
+                    const result = minimax(newBoard, 'O');
+                    move.score = result.score;
                 }
+
+                newBoard[availableSpots[i]] = null;
+                moves.push(move);
             }
-            const gameEmojis = [...selectedEmojis, ...selectedEmojis].sort(() => 0.5 - Math.random());
 
-            // Criar cartas com posições iniciais para animação
-            gameEmojis.forEach((emoji, index) => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.emoji = emoji;
-                card.dataset.index = index;
-                const row = Math.floor(index / 4);
-                const col = index % 4;
-                card.style.left = `${col * (tileSize + gap)}px`; // 80px (card) + 5px (gap) ou 60px + 5px
-                card.style.top = `${row * (tileSize + gap)}px`;
-                card.addEventListener('click', flipCard);
-                grid.appendChild(card);
-                cards.push({ element: card, emoji: emoji, flipped: false, matched: false });
-            });
-
-            // Mostrar todas as cartas por 3 segundos com animação
-            cards.forEach(card => {
-                card.element.classList.add('initial-show');
-                card.element.textContent = card.emoji;
-            });
-            setTimeout(() => {
-                cards.forEach(card => {
-                    card.element.classList.remove('initial-show');
-                    card.element.textContent = '';
-                });
-            }, 3000); // 3 segundos
-        }
-
-        function flipCard() {
-            const index = parseInt(this.dataset.index);
-            if (cards[index].flipped || cards[index].matched || flippedCards.length >= 2) return;
-
-            cards[index].flipped = true;
-            cards[index].element.classList.add('flipped');
-            cards[index].element.textContent = cards[index].emoji;
-            flippedCards.push(cards[index]);
-
-            if (flippedCards.length === 2) {
-                moves++;
-                movesDisplay.textContent = `Jogadas: ${moves}`;
-                checkMatch();
-            }
-        }
-
-        function checkMatch() {
-            const [card1, card2] = flippedCards;
-            if (card1.emoji === card2.emoji) {
-                card1.matched = card2.matched = true;
-                card1.element.classList.add('matched');
-                card2.element.classList.add('matched');
-                matchedPairs++;
-                flippedCards = [];
-                if (matchedPairs === 8) {
-                    document.getElementById('finalMoves').textContent = moves;
-                    document.getElementById('winModal').style.display = 'flex';
+            let bestMove;
+            if (player === 'O') {
+                let bestScore = -Infinity;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score > bestScore) {
+                        bestScore = moves[i].score;
+                        bestMove = moves[i];
+                    }
                 }
             } else {
-                setTimeout(() => {
-                    card1.flipped = card2.flipped = false;
-                    card1.element.classList.remove('flipped');
-                    card2.element.classList.remove('flipped');
-                    card1.element.textContent = '';
-                    card2.element.textContent = '';
-                    flippedCards = [];
-                }, 1000);
+                let bestScore = Infinity;
+                for (let i = 0; i < moves.length; i++) {
+                    if (moves[i].score < bestScore) {
+                        bestScore = moves[i].score;
+                        bestMove = moves[i];
+                    }
+                }
             }
+
+            return bestMove;
+        }
+
+        function checkWinnerFor(board, player) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                return board[a] === player && board[a] === board[b] && board[a] === board[c];
+            });
+        }
+
+        function resetGame() {
+            board = Array(9).fill(null);
+            // 50% de chance de a IA começar no modo Contra IA
+            if (gameMode === 'ai') {
+                currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
+            } else {
+                currentPlayer = 'X'; // No modo Local, Jogador 1 sempre começa
+            }
+
+            if (gameMode) {
+                document.getElementById('board').style.display = 'grid';
+                document.getElementById('game-message').style.display = 'none';
+                createBoard();
+                if (gameMode === 'ai' && currentPlayer === 'O') {
+                    setTimeout(makeAIMove, 500);
+                }
+            } else {
+                document.getElementById('board').style.display = 'none';
+                document.getElementById('game-message').style.display = 'block';
+            }
+            closeModal('winModal');
+            closeModal('drawModal');
         }
     </script>
 </body>
