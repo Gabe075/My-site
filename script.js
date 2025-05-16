@@ -3,7 +3,7 @@ const jogos = [
     { nome: "Quebra-Cabeça", pasta: "quebra-cabeca" },
     { nome: "damas", pasta: "damas" },
     { nome: "forca", pasta: "forca" },
-    { nome: "jogo da velha", pasta: "jogo da velha" },
+    { nome: "jogo da velha", pasta: "jogo-da-velha" },
    // Adicione novos jogos aqui
 ];
 
