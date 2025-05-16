@@ -3,8 +3,9 @@ const jogos = [
     { nome: "Quebra-Cabeça", pasta: "quebra-cabeca" },
     { nome: "Damas", pasta: "damas" },
     { nome: "Forca", pasta: "forca" },
-    { nome: "Jogo da velha", pasta: "jogo-da-velha" },
+    { nome: "Jogo da Velha", pasta: "jogo-da-velha" },
     { nome: "Palavras Cruzadas", pasta: "palavras-cruzadas" },
+    { nome: "Caça Palavras", pasta: "caca-palavras" },
    // Adicione novos jogos aqui
 ];
 
