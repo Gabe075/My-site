@@ -63,19 +63,22 @@
             cursor: pointer;
             user-select: none;
             color: #000; /* Letras pretas por padrão (tema claro) */
-            transition: background 0.3s, color 0.3s; /* Transição suave para mudanças de tema */
+            transition: background 0.3s, color 0.3s, opacity 0.3s; /* Transição suave para todas as propriedades */
+            opacity: 1; /* Garantir visibilidade */
         }
         .dark-theme .cell {
             background: #333; /* Fundo escuro no tema escuro */
             color: #fff; /* Letras brancas no tema escuro */
         }
         .cell.selected {
-            background: #a777e3;
-            color: #fff;
+            background: #a777e3 !important; /* Forçar roxo com alta prioridade */
+            color: #fff !important; /* Letras brancas para contraste */
+            opacity: 1 !important; /* Garantir visibilidade */
         }
         .cell.found {
-            background: #6e8efb;
-            color: #fff;
+            background: #6e8efb !important; /* Forçar azul com alta prioridade */
+            color: #fff !important; /* Letras brancas para contraste */
+            opacity: 1 !important; /* Garantir visibilidade */
         }
         #words-list {
             margin-top: 20px;
@@ -876,6 +879,9 @@
             selectedCells = [];
             selectedCells.push(cell);
             cell.classList.add("selected");
+            // Forçar atualização visual
+            cell.style.background = '#a777e3';
+            cell.style.color = '#fff';
         }
 
         function continueDrag(event) {
@@ -919,7 +925,11 @@
             }
 
             // Limpar seleção anterior
-            document.querySelectorAll(".cell.selected").forEach(c => c.classList.remove("selected"));
+            document.querySelectorAll(".cell.selected").forEach(c => {
+                c.classList.remove("selected");
+                c.style.background = ''; // Restaurar fundo original
+                c.style.color = ''; // Restaurar cor original
+            });
             selectedCells = [];
 
             // Selecionar células na direção
@@ -931,6 +941,10 @@
                 const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
                 selectedCells.push(cell);
                 cell.classList.add("selected");
+                // Forçar atualização visual
+                cell.style.background = '#a777e3';
+                cell.style.color = '#fff';
+                cell.style.opacity = '1';
             }
         }
 
@@ -960,11 +974,19 @@
                 selectedCells.forEach(cell => {
                     cell.classList.remove("selected");
                     cell.classList.add("found");
+                    // Forçar atualização visual
+                    cell.style.background = '#6e8efb';
+                    cell.style.color = '#fff';
+                    cell.style.opacity = '1';
                 });
                 createWordsList();
                 checkWin();
             } else {
-                selectedCells.forEach(cell => cell.classList.remove("selected"));
+                selectedCells.forEach(cell => {
+                    cell.classList.remove("selected");
+                    cell.style.background = ''; // Restaurar fundo original
+                    cell.style.color = ''; // Restaurar cor original
+                });
             }
 
             selectedCells = [];
