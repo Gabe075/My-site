@@ -46,14 +46,14 @@
             display: grid;
             grid-template-columns: repeat(10, 40px);
             gap: 1px;
-            background: #000;
+            background: transparent; /* Removido background preto */
             margin: 20px auto;
             width: 400px; /* 10x40px + 9x1px */
         }
         .cell {
             width: 40px;
             height: 40px;
-            background: #fff;
+            background: #fff; /* Fundo branco no tema claro */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -62,10 +62,11 @@
             border: 1px solid #ccc;
             cursor: pointer;
             user-select: none;
-            color: #000; /* Tema claro por padrão */
+            color: #000; /* Letras pretas no tema claro */
         }
         .cell.dark-theme {
-            color: #fff; /* Tema escuro */
+            color: #fff; /* Letras brancas no tema escuro */
+            background: #333; /* Fundo escuro para contraste */
         }
         .cell.selected {
             background: #a777e3;
@@ -84,7 +85,8 @@
         }
         #words-list ul {
             list-style: none;
-            text-align: left;
+            text-align: left; /* Alinhamento à esquerda para melhor legibilidade */
+            padding-left: 0; /* Remover padding padrão da lista */
         }
         #words-list li {
             margin: 5px 0;
@@ -231,6 +233,9 @@
             }
             .modal-content button {
                 padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            #words-list li {
                 font-size: 0.9em;
             }
         }
@@ -686,6 +691,8 @@
                     cell.classList.remove('dark-theme');
                 }
             });
+            // Forçar atualização do estilo para garantir visibilidade
+            cells.forEach(cell => cell.style.opacity = '1');
         }
 
         // Inicializar modal de início
@@ -825,6 +832,7 @@
                     grid.appendChild(cell);
                 }
             }
+            updateTheme(); // Garantir que o tema seja aplicado após criar o grid
         }
 
         function createWordsList() {
@@ -954,4 +962,4 @@
         resetAndShowStartModal();
     </script>
 </body>
-  </html>
+</html>
