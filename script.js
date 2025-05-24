@@ -7,6 +7,7 @@ const jogos = [
     { nome: "Palavras Cruzadas", pasta: "palavras-cruzadas" },
     { nome: "Caça Palavras", pasta: "caca-palavras" },
     { nome: "Campo Minado", pasta: "campo-minado" },
+    { nome: "Batalha Naval", pasta: "batalha-naval" },
    // Adicione novos jogos aqui
 ];
 
