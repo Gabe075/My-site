@@ -9,7 +9,7 @@ const jogos = [
     { nome: "Campo Minado", pasta: "campo-minado" },
     { nome: "Batalha Naval", pasta: "batalha-naval" },
     { nome: "Jogo da Cobra", pasta: "snake" },
-   // Adicione novos jogos aqui
+    // Adicione novos jogos aqui
 ];
 
 function carregarJogos() {
@@ -18,7 +18,7 @@ function carregarJogos() {
     jogos.forEach(jogo => {
         const gameCard = document.createElement("div");
         gameCard.className = "game-card";
-        gameCard.innerHTML = `<h2><a href="${jogo.pasta}/index.html">${jogo.nome}</a></h2>`;
+        gameCard.innerHTML = `<h2><a href="Jogos/${jogo.pasta}/index.html">${jogo.nome}</a></h2>`;
         gameList.appendChild(gameCard);
     });
 }
