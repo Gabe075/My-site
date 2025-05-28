@@ -9,6 +9,7 @@ const jogos = [
     { nome: "Campo Minado", pasta: "campo-minado" },
     { nome: "Batalha Naval", pasta: "batalha-naval" },
     { nome: "Jogo da Cobra", pasta: "snake" },
+    { nome: "Pong", pasta: "pong" },
     // Adicione novos jogos aqui
 ];
 
