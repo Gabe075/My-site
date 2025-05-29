@@ -10,6 +10,8 @@ const jogos = [
     { nome: "Batalha Naval", pasta: "batalha-naval" },
     { nome: "Jogo da Cobra", pasta: "snake" },
     { nome: "Pong", pasta: "pong" },
+    { nome: "Tetris", pasta: "tetris" },
+    { nome: "Flappy Bird", pasta: "flappy-bird" }
     // Adicione novos jogos aqui
 ];
 
