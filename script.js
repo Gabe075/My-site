@@ -12,7 +12,7 @@ const jogos = [
     { nome: "Jogo da Cobra", pasta: "snake" },
     { nome: "Pong", pasta: "pong" },
     { nome: "Tetris", pasta: "tetris" },
-    { nome: "Flappy Bird", pasta: "flappy-bird" }
+    { nome: "Flappy Bird", pasta: "flappy-bird" },
     // Adicione novos jogos aqui, por exemplo:
     // { nome: "Meu Novo Jogo", pasta: "meu-novo-jogo" },
 ];
