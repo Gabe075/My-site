@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labirinto</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="hamburger">☰</div>
+    <div class="sidebar" id="sidebar">
+        <a onclick="showModal('startModal')">🔄 Novo Jogo</a>
+    </div>
+
+    <div class="container">
+        <h1>Labirinto</h1>
+        
+        <div class="stats">
+            <div>Nível: <span id="level">1</span></div>
+            <div>Moedas: <span id="coins">0/0</span></div>
+            <div>Movimentos: <span id="moves">0</span></div>
+        </div>
+        
+        <div class="game-area" id="game-area"></div>
+        
+        <div class="controls">
+            <button class="control-btn" onclick="moveUp()">↑</button>
+            <button class="control-btn" onclick="moveLeft()">←</button>
+            <button class="control-btn" onclick="moveDown()">↓</button>
+            <button class="control-btn" onclick="moveRight()">→</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="startModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('startModal')">×</span>
+            <h2>Labirinto</h2>
+            <p>Escolha um nível:</p>
+            
+            <div class="level-selector">
+                <button id="level-0" class="level-btn active" onclick="selectLevel(0)">Nível 1</button>
+                <button id="level-1" class="level-btn" onclick="selectLevel(1)">Nível 2</button>
+                <button id="level-2" class="level-btn" onclick="selectLevel(2)">Nível 3</button>
+            </div>
+            
+            <button onclick="selectLevel(currentLevel)">Iniciar</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="levelCompleteModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('levelCompleteModal')">×</span>
+            <h2>Nível Completo!</h2>
+            <p>Você completou o nível em <span id="levelMoves">0</span> movimentos!</p>
+            <button id="nextLevelBtn" onclick="nextLevel()">Próximo Nível</button>
+            <button id="restartLevelBtn" onclick="restartLevel()">Reiniciar Nível</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="collectCoinsModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('collectCoinsModal')">×</span>
+            <h2>Colete todas as moedas!</h2>
+            <p>Você precisa coletar todas as moedas antes de chegar ao portal.</p>
+            <button onclick="closeModal('collectCoinsModal')">Continuar</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('winModal')">×</span>
+            <h2>Parabéns!</h2>
+            <p>Você completou todos os níveis!</p>
+            <button onclick="showModal('startModal')">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
