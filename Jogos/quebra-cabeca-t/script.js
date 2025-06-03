@@ -4,6 +4,7 @@ let moves = 0;
 let currentImage = 'puzzle_image1.png';
 let currentDifficulty = 4; // Padrão: 4x4
 let selectedPiece = null;
+let selectedGridIndex = null; // Para rastrear peça selecionada no grid
 const grid = document.getElementById('grid');
 const pieceBankElement = document.getElementById('piece-bank');
 const movesDisplay = document.getElementById('moves');
@@ -80,6 +81,7 @@ function startGame() {
     pieceBankElement.innerHTML = '';
     moves = 0;
     selectedPiece = null;
+    selectedGridIndex = null;
     movesDisplay.textContent = `Jogadas: ${moves}`;
     
     const tileSize = window.innerWidth <= 600 ? 240 / currentDifficulty : 320 / currentDifficulty;
@@ -139,6 +141,16 @@ function renderBoard() {
             tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
             tile.style.backgroundSize = `${size * 100}%`;
             tile.style.zIndex = 100 - number;
+            // Adicionar evento pra mover peça no grid
+            tile.addEventListener('click', () => movePieceInGrid(index));
+            tile.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                movePieceInGrid(index);
+            });
+        }
+        
+        if (selectedGridIndex === index) {
+            tile.classList.add('selected');
         }
         
         tile.dataset.index = index;
@@ -173,6 +185,12 @@ function renderPieceBank() {
             selectPiece(number);
         });
         
+        if (selectedPiece === number) {
+            tile.style.border = '2px solid #4db6ac';
+        } else {
+            tile.style.border = 'none';
+        }
+        
         pieceBankElement.appendChild(tile);
     });
     console.log('Banca renderizada:', pieceBank); // Debug
@@ -180,10 +198,10 @@ function renderPieceBank() {
 
 function selectPiece(number) {
     selectedPiece = number;
-    document.querySelectorAll('.bank-tile').forEach(tile => {
-        tile.style.border = tile.dataset.number == number ? '2px solid #4db6ac' : 'none';
-    });
-    console.log('Peça selecionada:', number); // Debug
+    selectedGridIndex = null; // Desmarcar peça no grid
+    renderBoard();
+    renderPieceBank();
+    console.log('Peça selecionada da banca:', number); // Debug
 }
 
 function placePiece(index) {
@@ -194,10 +212,51 @@ function placePiece(index) {
     moves++;
     movesDisplay.textContent = `Jogadas: ${moves}`;
     console.log('Peça posicionada:', selectedPiece, 'no índice', index); // Debug
-    console.log('Estado atual - Board:', board, 'PieceBank:', pieceBank); // Debug mais detalhado
+    console.log('Estado atual - Board:', board, 'PieceBank:', pieceBank); // Debug
     
     selectedPiece = null;
-    document.querySelectorAll('.bank-tile').forEach(tile => tile.style.border = 'none');
+    renderBoard();
+    renderPieceBank();
+    checkWin();
+}
+
+function movePieceInGrid(index) {
+    if (board[index] === null) {
+        // Se clicar numa célula vazia e tiver uma peça selecionada no grid, move pra lá
+        if (selectedGridIndex !== null) {
+            [board[index], board[selectedGridIndex]] = [board[selectedGridIndex], board[index]];
+            moves++;
+            movesDisplay.textContent = `Jogadas: ${moves}`;
+            console.log('Peça movida no grid:', board[selectedGridIndex], 'de', selectedGridIndex, 'para', index); // Debug
+            selectedGridIndex = null;
+            renderBoard();
+            renderPieceBank();
+            checkWin();
+        }
+        return;
+    }
+    
+    if (selectedGridIndex === null) {
+        // Seleciona a peça no grid
+        selectedGridIndex = index;
+        selectedPiece = null; // Desmarcar peça da banca
+        console.log('Peça selecionada no grid:', board[index], 'no índice', index); // Debug
+    } else if (selectedGridIndex === index) {
+        // Se clicar na mesma peça, devolve pra banca
+        pieceBank.push(board[index]);
+        board[index] = null;
+        moves++;
+        movesDisplay.textContent = `Jogadas: ${moves}`;
+        console.log('Peça devolvida à banca:', board[index], 'do índice', index); // Debug
+        selectedGridIndex = null;
+    } else {
+        // Troca as peças no grid
+        [board[index], board[selectedGridIndex]] = [board[selectedGridIndex], board[index]];
+        moves++;
+        movesDisplay.textContent = `Jogadas: ${moves}`;
+        console.log('Peça movida no grid:', board[selectedGridIndex], 'de', selectedGridIndex, 'para', index); // Debug
+        selectedGridIndex = null;
+    }
     
     renderBoard();
     renderPieceBank();
@@ -212,7 +271,6 @@ function checkWin() {
         winningBoard.push(i);
     }
     
-    // Verifica se o grid tá completamente preenchido e na ordem correta
     const isComplete = board.every(val => val !== null);
     const isCorrect = board.every((val, idx) => val === winningBoard[idx]);
     
