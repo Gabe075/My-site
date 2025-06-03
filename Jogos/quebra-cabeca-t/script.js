@@ -1,8 +1,11 @@
 let board = [];
+let pieceBank = [];
 let moves = 0;
 let currentImage = 'puzzle_image1.png';
 let currentDifficulty = 4; // Padrão: 4x4
+let selectedPiece = null;
 const grid = document.getElementById('grid');
+const pieceBankElement = document.getElementById('piece-bank');
 const movesDisplay = document.getElementById('moves');
 
 // Pré-carregar imagens
@@ -74,64 +77,47 @@ function startGame() {
     closeModal('startModal');
     closeModal('winModal');
     grid.innerHTML = '';
+    pieceBankElement.innerHTML = '';
     moves = 0;
+    selectedPiece = null;
     movesDisplay.textContent = `Jogadas: ${moves}`;
     
     const tileSize = window.innerWidth <= 600 ? 240 / currentDifficulty : 320 / currentDifficulty;
-    const gap = 5;
-    const gridSize = (tileSize + gap) * currentDifficulty - gap;
+    const gridSize = tileSize * currentDifficulty;
     
     grid.style.width = `${gridSize}px`;
     grid.style.height = `${gridSize}px`;
     grid.style.gridTemplateColumns = `repeat(${currentDifficulty}, 1fr)`;
     
     initializeBoard();
-    shuffleBoard();
+    initializePieceBank();
     renderBoard();
+    renderPieceBank();
 }
 
 function initializeBoard() {
-    board = [];
-    const totalTiles = currentDifficulty * currentDifficulty;
-    for (let i = 0; i < totalTiles; i++) {
-        board.push(i); // 0 é o espaço vazio
-    }
+    board = Array(currentDifficulty * currentDifficulty).fill(null); // Grid vazio
     console.log('Tabuleiro inicializado:', board); // Debug
 }
 
-function shuffleBoard() {
-    do {
-        for (let i = board.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [board[i], board[j]] = [board[j], board[i]];
-        }
-    } while (!isSolvable(board));
-    console.log('Tabuleiro embaralhado:', board); // Debug
-}
-
-function isSolvable(board) {
-    let inversions = 0;
-    const size = currentDifficulty;
-    for (let i = 0; i < board.length; i++) {
-        for (let j = i + 1; j < board.length; j++) {
-            if (board[i] > board[j] && board[i] !== 0 && board[j] !== 0) {
-                inversions++;
-            }
-        }
+function initializePieceBank() {
+    pieceBank = [];
+    const totalTiles = currentDifficulty * currentDifficulty;
+    for (let i = 1; i < totalTiles; i++) {
+        pieceBank.push(i);
     }
-    if (size % 2 === 1) {
-        return inversions % 2 === 0;
-    } else {
-        const emptyRow = Math.floor(board.indexOf(0) / size);
-        return (emptyRow % 2 === 0) ? inversions % 2 === 1 : inversions % 2 === 0;
+    // Embaralhar peças
+    for (let i = pieceBank.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pieceBank[i], pieceBank[j]] = [pieceBank[j], pieceBank[i]];
     }
+    console.log('Banca de peças inicializada:', pieceBank); // Debug
 }
 
 function renderBoard() {
     grid.innerHTML = ''; // Limpar o grid
     const size = currentDifficulty;
     const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
-    const gap = 5;
 
     board.forEach((number, index) => {
         const tile = document.createElement('div');
@@ -139,49 +125,82 @@ function renderBoard() {
         tile.style.width = `${tileSize}px`;
         tile.style.height = `${tileSize}px`;
         
-        if (number === 0) {
+        if (number === null) {
             tile.classList.add('empty');
+            tile.addEventListener('click', () => placePiece(index));
+            tile.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                placePiece(index);
+            });
         } else {
             const originalRow = Math.floor((number - 1) / size);
             const originalCol = (number - 1) % size;
             tile.style.backgroundImage = `url(images/${currentImage})`;
             tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
             tile.style.backgroundSize = `${size * 100}%`;
-            tile.style.zIndex = 100 - number; // Evita sobreposições
-            tile.addEventListener('click', () => moveTile(index));
-            tile.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                moveTile(index);
-            });
+            tile.style.zIndex = 100 - number;
         }
         
         tile.dataset.index = index;
-        tile.dataset.number = number;
+        tile.dataset.number = number || 0;
         grid.appendChild(tile);
     });
     console.log('Tabuleiro renderizado:', board); // Debug
 }
 
-function moveTile(index) {
-    const emptyIndex = board.indexOf(0);
-    if (canMove(index, emptyIndex)) {
-        [board[index], board[emptyIndex]] = [board[emptyIndex], board[index]];
-        moves++;
-        movesDisplay.textContent = `Jogadas: ${moves}`;
-        console.log('Peça movida:', board); // Debug
-        renderBoard();
-        checkWin();
-    }
+function renderPieceBank() {
+    pieceBankElement.innerHTML = ''; // Limpar a banca
+    const size = currentDifficulty;
+    const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
+
+    pieceBank.forEach(number => {
+        const tile = document.createElement('div');
+        tile.classList.add('tile', 'bank-tile');
+        tile.style.width = `${tileSize}px`;
+        tile.style.height = `${tileSize}px`;
+        
+        const originalRow = Math.floor((number - 1) / size);
+        const originalCol = (number - 1) % size;
+        tile.style.backgroundImage = `url(images/${currentImage})`;
+        tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
+        tile.style.backgroundSize = `${size * 100}%`;
+        tile.style.zIndex = 100 - number;
+        
+        tile.dataset.number = number;
+        tile.addEventListener('click', () => selectPiece(number));
+        tile.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            selectPiece(number);
+        });
+        
+        pieceBankElement.appendChild(tile);
+    });
+    console.log('Banca renderizada:', pieceBank); // Debug
 }
 
-function canMove(index, emptyIndex) {
-    const size = currentDifficulty;
-    const row = Math.floor(index / size);
-    const col = index % size;
-    const emptyRow = Math.floor(emptyIndex / size);
-    const emptyCol = emptyIndex % size;
-    return (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
-           (col === emptyCol && Math.abs(row - emptyRow) === 1);
+function selectPiece(number) {
+    selectedPiece = number;
+    document.querySelectorAll('.bank-tile').forEach(tile => {
+        tile.style.border = tile.dataset.number == number ? '2px solid #4db6ac' : 'none';
+    });
+    console.log('Peça selecionada:', number); // Debug
+}
+
+function placePiece(index) {
+    if (selectedPiece === null || board[index] !== null) return;
+    
+    board[index] = selectedPiece;
+    pieceBank = pieceBank.filter(num => num !== selectedPiece);
+    moves++;
+    movesDisplay.textContent = `Jogadas: ${moves}`;
+    console.log('Peça posicionada:', selectedPiece, 'no índice', index); // Debug
+    
+    selectedPiece = null;
+    document.querySelectorAll('.bank-tile').forEach(tile => tile.style.border = 'none');
+    
+    renderBoard();
+    renderPieceBank();
+    checkWin();
 }
 
 function checkWin() {
@@ -191,8 +210,9 @@ function checkWin() {
     for (let i = 1; i < totalTiles; i++) {
         winningBoard.push(i);
     }
-    winningBoard.push(0);
-    if (board.every((val, idx) => val === winningBoard[idx])) {
+    winningBoard.push(null); // Última posição pode ser null ou preenchida
+    
+    if (board.every((val, idx) => val === winningBoard[idx] || (idx === totalTiles - 1 && val !== null))) {
         document.getElementById('finalMoves').textContent = moves;
         document.getElementById('winModal').style.display = 'flex';
         console.log('Vitória detectada:', board); // Debug
