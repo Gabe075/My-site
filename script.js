@@ -21,6 +21,7 @@ const jogos = [
     { nome: "Arkanoid Advanced", pasta: "arkanoid-advanced" },
     { nome: "Acertei a Toupeira", pasta: "acertei-a-toupeira" },
     { nome: "2048", pasta: "2048" },
+    { nome: "Quebra Cabeça Imagem", pasta: "quebra-cabeca-t" },
     // Adicione novos jogos aqui, por exemplo:
     // { nome: "Meu Novo Jogo", pasta: "meu-novo-jogo" },
 ];
