@@ -103,7 +103,7 @@ function initializeBoard() {
 function initializePieceBank() {
     pieceBank = [];
     const totalTiles = currentDifficulty * currentDifficulty;
-    for (let i = 1; i < totalTiles; i++) {
+    for (let i = 1; i <= totalTiles; i++) { // Inclui todas as peças (1 a totalTiles)
         pieceBank.push(i);
     }
     // Embaralhar peças
@@ -207,14 +207,13 @@ function checkWin() {
     const size = currentDifficulty;
     const totalTiles = size * size;
     const winningBoard = [];
-    for (let i = 1; i < totalTiles; i++) {
+    for (let i = 1; i <= totalTiles; i++) { // Ordem correta: 1 a totalTiles
         winningBoard.push(i);
     }
-    winningBoard.push(null); // Última posição pode ser null ou preenchida
     
-    if (board.every((val, idx) => val === winningBoard[idx] || (idx === totalTiles - 1 && val !== null))) {
+    if (board.every((val, idx) => val === winningBoard[idx])) {
         document.getElementById('finalMoves').textContent = moves;
         document.getElementById('winModal').style.display = 'flex';
         console.log('Vitória detectada:', board); // Debug
     }
-}
+         }
