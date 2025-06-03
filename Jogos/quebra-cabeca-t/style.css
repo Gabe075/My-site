@@ -42,17 +42,12 @@ h1 {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
     gap: 5px;
     margin: 20px auto;
     position: relative;
-    width: 330px;
-    height: 330px;
 }
 
 .tile {
-    width: 80px;
-    height: 80px;
     background-size: 400% 400%;
     border-radius: 10px;
     font-size: 0;
@@ -61,10 +56,10 @@ h1 {
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease, background 0.2s ease, left 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transition: transform 0.2s ease, background 0.2s ease;
     color: transparent;
-    position: absolute;
     overflow: hidden;
+    z-index: calc(100 - var(--number, 0)); /* Evita sobreposições */
 }
 
 .tile:hover {
