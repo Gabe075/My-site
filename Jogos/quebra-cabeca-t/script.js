@@ -103,7 +103,7 @@ function initializeBoard() {
 function initializePieceBank() {
     pieceBank = [];
     const totalTiles = currentDifficulty * currentDifficulty;
-    for (let i = 1; i <= totalTiles; i++) { // Inclui todas as peças (1 a totalTiles)
+    for (let i = 1; i <= totalTiles; i++) {
         pieceBank.push(i);
     }
     // Embaralhar peças
@@ -194,6 +194,7 @@ function placePiece(index) {
     moves++;
     movesDisplay.textContent = `Jogadas: ${moves}`;
     console.log('Peça posicionada:', selectedPiece, 'no índice', index); // Debug
+    console.log('Estado atual - Board:', board, 'PieceBank:', pieceBank); // Debug mais detalhado
     
     selectedPiece = null;
     document.querySelectorAll('.bank-tile').forEach(tile => tile.style.border = 'none');
@@ -207,13 +208,19 @@ function checkWin() {
     const size = currentDifficulty;
     const totalTiles = size * size;
     const winningBoard = [];
-    for (let i = 1; i <= totalTiles; i++) { // Ordem correta: 1 a totalTiles
+    for (let i = 1; i <= totalTiles; i++) {
         winningBoard.push(i);
     }
     
-    if (board.every((val, idx) => val === winningBoard[idx])) {
+    // Verifica se o grid tá completamente preenchido e na ordem correta
+    const isComplete = board.every(val => val !== null);
+    const isCorrect = board.every((val, idx) => val === winningBoard[idx]);
+    
+    if (isComplete && isCorrect) {
         document.getElementById('finalMoves').textContent = moves;
         document.getElementById('winModal').style.display = 'flex';
         console.log('Vitória detectada:', board); // Debug
+    } else {
+        console.log('Ainda não venceu - Completo:', isComplete, 'Correto:', isCorrect); // Debug
     }
-         }
+}
