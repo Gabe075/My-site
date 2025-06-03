@@ -4,7 +4,6 @@ let currentImage = 'puzzle_image1.png';
 let currentDifficulty = 4; // Padrão: 4x4
 const grid = document.getElementById('grid');
 const movesDisplay = document.getElementById('moves');
-let tiles = []; // Para armazenar as peças e permitir animações
 
 // Pré-carregar imagens
 const preloadImages = () => {
@@ -14,19 +13,16 @@ const preloadImages = () => {
         'images/puzzle_image2.png',
         'images/puzzle_image3.png'
     ];
-    
     images.forEach(src => {
         const img = new Image();
         img.src = src;
     });
 };
 
-// Inicializar modal de início ao carregar a página
+// Inicializar modal de início
 document.addEventListener('DOMContentLoaded', () => {
     preloadImages();
     document.getElementById('startModal').style.display = 'flex';
-    
-    // Configurar opções de imagem
     document.querySelectorAll('.image-option').forEach(option => {
         const imageSrc = option.dataset.image;
         option.style.backgroundImage = `url(images/${imageSrc})`;
@@ -81,13 +77,13 @@ function startGame() {
     moves = 0;
     movesDisplay.textContent = `Jogadas: ${moves}`;
     
-    // Ajustar tamanho do grid com base na dificuldade
     const tileSize = window.innerWidth <= 600 ? 240 / currentDifficulty : 320 / currentDifficulty;
     const gap = 5;
     const gridSize = (tileSize + gap) * currentDifficulty - gap;
     
     grid.style.width = `${gridSize}px`;
     grid.style.height = `${gridSize}px`;
+    grid.style.gridTemplateColumns = `repeat(${currentDifficulty}, 1fr)`;
     
     initializeBoard();
     shuffleBoard();
@@ -96,29 +92,26 @@ function startGame() {
 
 function initializeBoard() {
     board = [];
-    tiles = [];
     const totalTiles = currentDifficulty * currentDifficulty;
-    
     for (let i = 0; i < totalTiles; i++) {
-        board.push(i); // 0 representa o espaço vazio
+        board.push(i); // 0 é o espaço vazio
     }
+    console.log('Tabuleiro inicializado:', board); // Debug
 }
 
 function shuffleBoard() {
-    // Embaralha o tabuleiro de forma que seja solucionável
     do {
         for (let i = board.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [board[i], board[j]] = [board[j], board[i]];
         }
     } while (!isSolvable(board));
+    console.log('Tabuleiro embaralhado:', board); // Debug
 }
 
 function isSolvable(board) {
     let inversions = 0;
     const size = currentDifficulty;
-    
-    // Contar inversões
     for (let i = 0; i < board.length; i++) {
         for (let j = i + 1; j < board.length; j++) {
             if (board[i] > board[j] && board[i] !== 0 && board[j] !== 0) {
@@ -126,23 +119,16 @@ function isSolvable(board) {
             }
         }
     }
-    
-    // Para tabuleiros de tamanho ímpar, o número de inversões deve ser par
     if (size % 2 === 1) {
         return inversions % 2 === 0;
-    } 
-    // Para tabuleiros de tamanho par, a paridade depende da posição da peça vazia
-    else {
+    } else {
         const emptyRow = Math.floor(board.indexOf(0) / size);
-        // Se a peça vazia está em uma linha par (contando de baixo), inversões deve ser ímpar
         return (emptyRow % 2 === 0) ? inversions % 2 === 1 : inversions % 2 === 0;
     }
 }
 
 function renderBoard() {
     grid.innerHTML = ''; // Limpar o grid
-    tiles = []; // Limpar o array de tiles
-    
     const size = currentDifficulty;
     const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
     const gap = 5;
@@ -150,77 +136,41 @@ function renderBoard() {
     board.forEach((number, index) => {
         const tile = document.createElement('div');
         tile.classList.add('tile');
+        tile.style.width = `${tileSize}px`;
+        tile.style.height = `${tileSize}px`;
         
         if (number === 0) {
             tile.classList.add('empty');
         } else {
-            // Calcular posição da imagem para este pedaço
             const originalRow = Math.floor((number - 1) / size);
             const originalCol = (number - 1) % size;
-            
-            // Definir background-position para mostrar apenas a parte correta da imagem
             tile.style.backgroundImage = `url(images/${currentImage})`;
             tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
             tile.style.backgroundSize = `${size * 100}%`;
+            tile.style.zIndex = 100 - number; // Evita sobreposições
+            tile.addEventListener('click', () => moveTile(index));
+            tile.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveTile(index);
+            });
         }
         
         tile.dataset.index = index;
         tile.dataset.number = number;
-
-        // Calcular posição para animação
-        const row = Math.floor(index / size);
-        const col = index % size;
-        tile.style.left = `${col * (tileSize + gap)}px`;
-        tile.style.top = `${row * (tileSize + gap)}px`;
-        tile.style.width = `${tileSize}px`;
-        tile.style.height = `${tileSize}px`;
-
-        // Adicionar evento de clique apenas para peças não vazias
-        if (number !== 0) {
-            tile.addEventListener('click', () => moveTile(index));
-        }
-
         grid.appendChild(tile);
-        tiles[number] = tile; // Armazenar a peça
     });
+    console.log('Tabuleiro renderizado:', board); // Debug
 }
 
 function moveTile(index) {
     const emptyIndex = board.indexOf(0);
     if (canMove(index, emptyIndex)) {
-        // Animação: mover a peça clicada e o espaço vazio
-        const tile = tiles[board[index]];
-        const emptyTile = tiles[0];
-        
-        const size = currentDifficulty;
-        const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
-        const gap = 5;
-
-        const row = Math.floor(index / size);
-        const col = index % size;
-        const emptyRow = Math.floor(emptyIndex / size);
-        const emptyCol = emptyIndex % size;
-
-        // Atualizar posições para animação
-        tile.style.left = `${emptyCol * (tileSize + gap)}px`;
-        tile.style.top = `${emptyRow * (tileSize + gap)}px`;
-        emptyTile.style.left = `${col * (tileSize + gap)}px`;
-        emptyTile.style.top = `${row * (tileSize + gap)}px`;
-
-        // Atualizar o array board
         [board[index], board[emptyIndex]] = [board[emptyIndex], board[index]];
-
-        // Atualizar os tiles
-        tiles[board[index]] = tile;
-        tiles[board[emptyIndex]] = emptyTile;
-
         moves++;
         movesDisplay.textContent = `Jogadas: ${moves}`;
-
-        // Verificar vitória após a animação
-        setTimeout(() => {
-            checkWin();
-        }, 200); // Tempo da animação (0.2s)
+        console.log('Peça movida:', board); // Debug
+        renderBoard();
+        checkWin();
     }
 }
 
@@ -230,8 +180,6 @@ function canMove(index, emptyIndex) {
     const col = index % size;
     const emptyRow = Math.floor(emptyIndex / size);
     const emptyCol = emptyIndex % size;
-
-    // Verifica se o movimento é para uma posição adjacente (cima, baixo, esquerda, direita)
     return (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
            (col === emptyCol && Math.abs(row - emptyRow) === 1);
 }
@@ -240,14 +188,13 @@ function checkWin() {
     const size = currentDifficulty;
     const totalTiles = size * size;
     const winningBoard = [];
-    
     for (let i = 1; i < totalTiles; i++) {
         winningBoard.push(i);
     }
-    winningBoard.push(0); // Última posição é o espaço vazio
-
+    winningBoard.push(0);
     if (board.every((val, idx) => val === winningBoard[idx])) {
         document.getElementById('finalMoves').textContent = moves;
         document.getElementById('winModal').style.display = 'flex';
+        console.log('Vitória detectada:', board); // Debug
     }
 }
