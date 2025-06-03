@@ -13,7 +13,6 @@ const jogos = [
     { nome: "Pong", pasta: "pong" },
     { nome: "Tetris", pasta: "tetris" },
     { nome: "Flappy Bird", pasta: "flappy-bird" },
-    { nome: "Labirinto", pasta: "labirinto" },
     { nome: "Sudoku", pasta: "sudoku" },
     { nome: "Space Invaders", pasta: "space-invaders" },
     { nome: "Simon Says", pasta: "simon-says" },
