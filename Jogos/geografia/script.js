@@ -1,4 +1,4 @@
-// Dados do quiz (exemplos representativos de 2025)
+// Dados do quiz (exemplos expandidos com mais países, conflitos, organizações e ONGs)
 const quizData = [
     // Países
     {
@@ -14,6 +14,41 @@ const quizData = [
         flag: "https://flagcdn.com/w320/ua.png",
         options: ["Ucrânia", "Rússia", "Polônia", "Bielorrússia"],
         answer: "Ucrânia"
+    },
+    {
+        type: "country",
+        question: "Qual país é representado por esta bandeira?",
+        flag: "https://flagcdn.com/w320/jp.png",
+        options: ["Japão", "China", "Coreia do Sul", "Tailândia"],
+        answer: "Japão"
+    },
+    {
+        type: "country",
+        question: "Qual país é representado por esta bandeira?",
+        flag: "https://flagcdn.com/w320/za.png",
+        options: ["África do Sul", "Nigéria", "Quênia", "Gana"],
+        answer: "África do Sul"
+    },
+    {
+        type: "country",
+        question: "Qual país é representado por esta bandeira?",
+        flag: "https://flagcdn.com/w320/fr.png",
+        options: ["França", "Itália", "Espanha", "Bélgica"],
+        answer: "França"
+    },
+    {
+        type: "country",
+        question: "Qual país é representado por esta bandeira?",
+        flag: "https://flagcdn.com/w320/in.png",
+        options: ["Índia", "Paquistão", "Bangladesh", "Sri Lanka"],
+        answer: "Índia"
+    },
+    {
+        type: "country",
+        question: "Qual país é representado por esta bandeira?",
+        flag: "https://flagcdn.com/w320/ca.png",
+        options: ["Canadá", "Estados Unidos", "México", "Groenlândia"],
+        answer: "Canadá"
     },
     // Conflitos/Gerras
     {
@@ -72,19 +107,21 @@ const endModal = document.getElementById("end-modal");
 const finalScore = document.getElementById("final-score");
 const restartGameBtn = document.getElementById("restart-game");
 
-let currentQuestion = 0;
 let score = 0;
 let timeLeft = 10;
 let timer;
 let gameActive = true;
+let usedQuestions = new Set(); // Rastrear perguntas já usadas
 
 // Carregar progresso salvo
 function loadProgress() {
     const savedData = JSON.parse(localStorage.getItem("geographyGame2025"));
     if (savedData) {
         score = savedData.score || 0;
-        currentQuestion = savedData.currentQuestion || 0;
         scoreDisplay.textContent = `Pontuação: ${score}`;
+        if (savedData.usedQuestions) {
+            usedQuestions = new Set(savedData.usedQuestions);
+        }
     }
 }
 
@@ -92,7 +129,7 @@ function loadProgress() {
 function saveProgress() {
     const data = {
         score: score,
-        currentQuestion: currentQuestion
+        usedQuestions: Array.from(usedQuestions)
     };
     localStorage.setItem("geographyGame2025", JSON.stringify(data));
 }
@@ -104,6 +141,19 @@ function shuffle(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+// Escolher pergunta aleatoriamente
+function getRandomQuestion() {
+    if (usedQuestions.size >= quizData.length) {
+        usedQuestions.clear(); // Resetar se todas as perguntas foram usadas
+    }
+    let index;
+    do {
+        index = Math.floor(Math.random() * quizData.length);
+    } while (usedQuestions.has(index));
+    usedQuestions.add(index);
+    return quizData[index];
 }
 
 // Iniciar temporizador
@@ -124,16 +174,11 @@ function startTimer() {
 
 // Mostrar pergunta
 function loadQuestion() {
-    if (currentQuestion >= quizData.length) {
-        endGame();
-        return;
-    }
-
     gameActive = true;
-    const q = quizData[currentQuestion];
+    const q = getRandomQuestion();
     question.textContent = q.question;
-    flag1.src = q.flag || q.flag1;
-    flag1.style.display = "block";
+    flag1.src = q.flag || q.flag1 || "";
+    flag1.style.display = q.flag || q.flag1 ? "block" : "none";
     flag2.src = q.flag2 || "";
     flag2.style.display = q.flag2 ? "block" : "none";
 
@@ -180,23 +225,20 @@ function showResult(isCorrect, message) {
 // Próxima pergunta
 nextQuestionBtn.onclick = () => {
     resultModal.style.display = "none";
-    currentQuestion++;
     loadQuestion();
 };
 
 // Fim do jogo
 function endGame() {
     clearInterval(timer);
-    finalScore.textContent = `Pontuação Final: ${score}`;
+    finalScore.textContent = `Pontuação Acumulada: ${score}`;
     endModal.style.display = "flex";
 }
 
 // Reiniciar jogo
 restartGameBtn.onclick = () => {
     endModal.style.display = "none";
-    currentQuestion = 0;
-    score = 0;
-    scoreDisplay.textContent = `Pontuação: ${score}`;
+    usedQuestions.clear(); // Limpar perguntas usadas, mas manter pontuação
     saveProgress();
     loadQuestion();
 };
