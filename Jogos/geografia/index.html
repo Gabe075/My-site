@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Geografia 2025</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Jogo de Geografia 2025</h1>
+        <div id="score">Pontuação: 0</div>
+        <div id="timer">Tempo: 10s</div>
+        <div id="flag-container">
+            <img id="flag1" src="" alt="Bandeira 1">
+            <img id="flag2" src="" alt="Bandeira 2" style="display: none;">
+        </div>
+        <div id="question"></div>
+        <div id="options"></div>
+    </div>
+
+    <!-- Modal de Resultado -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="result-title"></h2>
+            <p id="result-message"></p>
+            <button id="next-question">Próxima Pergunta</button>
+        </div>
+    </div>
+
+    <!-- Modal de Fim de Jogo -->
+    <div id="end-modal" class="modal">
+        <div class="modal-content">
+            <h2>Fim do Jogo!</h2>
+            <p id="final-score"></p>
+            <button id="restart-game">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
