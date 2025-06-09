@@ -16,7 +16,23 @@
             <img id="flag2" src="" alt="Bandeira 2" style="display: none;">
         </div>
         <div id="question"></div>
-        <div id="options"></div>
+        <!-- Área para múltipla escolha -->
+        <div id="options" class="game-mode"></div>
+        <!-- Área para arrastar e soltar -->
+        <div id="drag-drop" class="game-mode" style="display: none;">
+            <div id="drop-zone" class="drop-zone">Arraste o nome para cá</div>
+            <div id="draggable-options"></div>
+        </div>
+        <!-- Área para pergunta aberta -->
+        <div id="open-question" class="game-mode" style="display: none;">
+            <input type="text" id="answer-input" placeholder="Digite sua resposta">
+            <button id="submit-answer">Enviar</button>
+        </div>
+        <!-- Área para ordenação -->
+        <div id="sort-game" class="game-mode" style="display: none;">
+            <div id="sort-instructions">Arraste para ordenar corretamente</div>
+            <div id="sort-items"></div>
+        </div>
     </div>
 
     <!-- Modal de Resultado -->
