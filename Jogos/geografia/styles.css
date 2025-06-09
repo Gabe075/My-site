@@ -53,6 +53,10 @@ h1 {
     margin: 20px 0;
 }
 
+.game-mode {
+    margin: 20px 0;
+}
+
 #options {
     display: flex;
     flex-direction: column;
@@ -71,6 +75,63 @@ h1 {
 
 .option:hover {
     background: #e0e0e0;
+}
+
+.drop-zone {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border: 2px dashed #fff;
+    border-radius: 5px;
+    min-height: 100px;
+    margin-bottom: 10px;
+}
+
+.draggable {
+    background: #fff;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: move;
+    margin: 5px;
+    display: inline-block;
+    font-size: 1.1em;
+}
+
+#answer-input {
+    padding: 10px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    border: none;
+    margin-right: 10px;
+}
+
+#submit-answer {
+    background: #fff;
+    color: #000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+#submit-answer:hover {
+    background: #e0e0e0;
+}
+
+#sort-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sort-item {
+    background: #fff;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: move;
+    font-size: 1.1em;
 }
 
 .modal {
