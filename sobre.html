@@ -3,65 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobre - Lite ApkMod Jogos</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="style.css"> </head>
+    <title>Sobre - GameHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .about-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .about-header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        
+        .about-header p {
+            font-size: 1.2rem;
+            color: #8892b0;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .about-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .about-section h2 {
+            color: #ccd6f6;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .about-section h2 i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .about-section p {
+            color: #8892b0;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .feature-card h3 {
+            color: #ccd6f6;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card p {
+            color: #8892b0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #8892b0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .developer-section {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .developer-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 3rem;
+            color: white;
+        }
+        
+        .developer-section h3 {
+            color: #ccd6f6;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .developer-section p {
+            color: #8892b0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            display: block;
+            width: fit-content;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .about-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-section {
+                padding: 25px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
 <body>
-    <div class="hamburger" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </div>
-
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            Lite ApkMod Jogos <i class="fas fa-gamepad"></i>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-gamepad"></i>
+                GameHub
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Início
+                </a>
+                <a href="index.html#games" class="nav-link">
+                    <i class="fas fa-gamepad"></i>
+                    Jogos
+                </a>
+                <a href="sobre.html" class="nav-link active">
+                    <i class="fas fa-info-circle"></i>
+                    Sobre
+                </a>
+                <a href="contato.html" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    Contato
+                </a>
+            </div>
         </div>
-        <a href="index.html"><i class="fas fa-home"></i> Início</a>
-        <a onclick="openModal('gameListModal')"><i class="fas fa-list-ul"></i> Lista de Jogos</a>
-        <a href="sobre.html" class="active"><i class="fas fa-info-circle"></i> Sobre</a> <a href="contato.html"><i class="fas fa-envelope"></i> Contato</a>
-        <div class="sidebar-footer">
-            <p>&copy; Lite ApkMod Jogos <span id="currentYear"></span></p>
-        </div>
-    </div>
+    </nav>
 
-    <div class="container" id="mainContainer">
-        <h1 id="pageTitle"><i class="fas fa-info-circle"></i> Sobre Lite ApkMod Jogos</h1>
-        <div class="about-content">
-            <section>
-                <h2>Nossa Missão</h2>
-                <p>Bem-vindo ao Lite ApkMod Jogos! Nossa missão é fornecer um espaço divertido e acessível para todos os entusiastas de jogos casuais. Acreditamos que os jogos são uma forma poderosa de entretenimento, relaxamento e conexão.</p>
-            </section>
-            <section>
-                <h2>Quem Sou Eu</h2>
-                <p>Eu sou Gabe, o criador e curador deste site. Minha paixão por jogos e desenvolvimento web me inspirou a criar esta plataforma. Como dizem, "As mais lindas palavras de amor são ditas no silêncio de um olhar" - e, para mim, a alegria de um bom jogo também pode ser uma experiência profunda e silenciosa.</p>
-                <p>Este é um projeto pessoal para compartilhar jogos que eu gosto e, quem sabe, trazer um pouco de diversão para o seu dia.</p>
-            </section>
-            <section>
-                <h2>O Que Você Encontrará Aqui</h2>
-                <p>No Lite ApkMod Jogos, você encontrará uma coleção crescente de jogos clássicos e novos, todos jogáveis diretamente no seu navegador. Desde quebra-cabeças desafiadores até jogos de ação rápida, há algo para todos os gostos.</p>
-                <p>Nosso foco é em jogos leves, que não exigem downloads ou instalações complicadas. Apenas clique e jogue!</p>
-            </section>
-            <section>
-                <h2>Tecnologia</h2>
-                <p>Este site foi construído com HTML, CSS e JavaScript puros, buscando uma experiência de usuário limpa e rápida. Agradecimentos especiais às bibliotecas como Font Awesome para os ícones.</p>
-            </section>
+    <main class="about-container">
+        <div class="about-header">
+            <h1><i class="fas fa-info-circle"></i> Sobre o GameHub</h1>
+            <p>Bem-vindo ao GameHub! Nossa missão é fornecer um espaço divertido e acessível para todos os entusiastas de jogos casuais. Acreditamos que os jogos são uma forma poderosa de entretenimento, relaxamento e conexão.</p>
         </div>
-        <button class="action-button" onclick="window.location.href='index.html'">
-            <i class="fas fa-arrow-left"></i> Voltar para Início
-        </button>
-    </div>
 
-    <div class="modal" id="gameListModal">
-        <div class="modal-content">
-            <button class="close-modal-btn" onclick="closeModal('gameListModal')">&times;</button>
-            <h2><i class="fas fa-dice-d6"></i> Lista de Jogos</h2>
-            <div id="game-list-container">
+        <div class="about-section">
+            <h2><i class="fas fa-rocket"></i> Nossa Missão</h2>
+            <p>O GameHub foi criado com o objetivo de reunir os melhores jogos clássicos e modernos em uma única plataforma. Queremos proporcionar momentos de diversão e nostalgia, trazendo de volta aqueles jogos que marcaram gerações e apresentando novos desafios para os jogadores de hoje.</p>
+            <p>Acreditamos que os jogos devem ser acessíveis a todos, independentemente da idade ou experiência. Por isso, nossa coleção inclui desde quebra-cabeças relaxantes até jogos de ação que testam seus reflexos.</p>
+        </div>
+
+        <div class="about-section">
+            <h2><i class="fas fa-star"></i> O Que Oferecemos</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>23+ Jogos</h3>
+                    <p>Uma coleção crescente de jogos clássicos e modernos para todos os gostos</p>
                 </div>
-            <button class="action-button secondary" style="margin-top: 20px;" onclick="closeModal('gameListModal')">
-                <i class="fas fa-times-circle"></i> Fechar
-            </button>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>100% Responsivo</h3>
+                    <p>Jogue em qualquer dispositivo - desktop, tablet ou smartphone</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Sem Downloads</h3>
+                    <p>Todos os jogos funcionam diretamente no seu navegador</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Totalmente Gratuito</h3>
+                    <p>Diversão ilimitada sem custos ou assinaturas</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3>Categorias Organizadas</h3>
+                    <p>Encontre facilmente jogos por categoria: Puzzle, Arcade, Estratégia e mais</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Disponível 24/7</h3>
+                    <p>Acesse seus jogos favoritos a qualquer hora, em qualquer lugar</p>
+                </div>
+            </div>
         </div>
-    </div>
-    
-    <script src="script.js"></script> </body>
+
+        <div class="about-section">
+            <h2><i class="fas fa-chart-line"></i> Estatísticas da Plataforma</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">23</span>
+                    <div class="stat-label">Jogos Disponíveis</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">5</span>
+                    <div class="stat-label">Categorias</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">100%</span>
+                    <div class="stat-label">Gratuito</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">Disponibilidade</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="developer-section">
+            <div class="developer-avatar">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+            <h3>Quem Sou Eu</h3>
+            <p>Eu sou Gabe, o criador e curador deste site. Minha paixão por jogos e desenvolvimento web me inspirou a criar esta plataforma. Como dizem, "As mais lindas palavras de amor são ditas no silêncio de um olhar" - e, para mim, a alegria de um bom jogo também pode ser uma experiência profunda e silenciosa.</p>
+            <p>Este é um projeto pessoal para compartilhar jogos que eu gosto e, quem sabe, trazer um pouco de diversão para o seu dia.</p>
+        </div>
+
+        <div class="about-section">
+            <h2><i class="fas fa-gamepad"></i> O Que Você Encontrará Aqui</h2>
+            <p>No GameHub, você encontrará uma coleção crescente de jogos clássicos e novos, todos jogáveis diretamente no seu navegador. Desde quebra-cabeças desafiadores até jogos de ação rápida, há algo para todos os gostos.</p>
+            <p>Nossa biblioteca inclui clássicos atemporais como Snake, Tetris e Pac-Man, além de versões modernas de jogos populares. Cada jogo foi cuidadosamente selecionado e otimizado para proporcionar a melhor experiência possível.</p>
+            <p>Estamos sempre adicionando novos jogos e melhorando os existentes. Se você tem sugestões ou feedback, não hesite em entrar em contato conosco!</p>
+        </div>
+
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Voltar ao Início
+        </a>
+    </main>
+
+    <script src="script.js"></script>
+</body>
 </html>
 
