@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../common.css">
     <style>
         
+        
         * {
             margin: 0;
             padding: 0;
@@ -180,10 +181,16 @@
             }
         }
     
+    
     </style>
 </head>
 <body class="game-container">
     <div class="game-wrapper">
+        <h1 class="game-title">Tetris</h1>
+        <p class="game-subtitle">Encaixe as peças e complete as linhas!</p>
+        
+        <div class="game-area">
+            <div class="game-wrapper">
         <h1 class="game-title">Tetris</h1>
         <p class="game-subtitle">Encaixe as peças e complete as linhas!</p>
         
@@ -230,9 +237,17 @@
             
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
     <script src="../common.js"></script>
     <script>
+        
+
         
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -503,6 +518,7 @@
         } catch (error) {
             console.error('Erro:', error);
         }
+    
     
     </script>
 </body>

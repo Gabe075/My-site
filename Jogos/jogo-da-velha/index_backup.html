@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../common.css">
     <style>
         
+        
         * {
             margin: 0;
             padding: 0;
@@ -234,10 +235,16 @@
             }
         }
     
+    
     </style>
 </head>
 <body class="game-container">
     <div class="game-wrapper">
+        <h1 class="game-title">Jogo da Velha</h1>
+        <p class="game-subtitle">Forme uma linha de três símbolos!</p>
+        
+        <div class="game-area">
+            <div class="game-wrapper">
         <h1 class="game-title">Jogo da Velha</h1>
         <p class="game-subtitle">Forme uma linha de três símbolos!</p>
         
@@ -295,9 +302,17 @@
             
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
     <script src="../common.js"></script>
     <script>
+        
+
         
         let board = Array(9).fill(null);
         let currentPlayer = 'X';
@@ -500,6 +515,7 @@
             closeModal('winModal');
             closeModal('drawModal');
         }
+    
     
     </script>
 </body>

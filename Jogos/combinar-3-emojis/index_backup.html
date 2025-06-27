@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../common.css">
     <style>
         
+        
         * {
             margin: 0;
             padding: 0;
@@ -175,10 +176,16 @@
             .modal-content button { padding: 10px 20px; font-size: 0.9em; }
         }
     
+    
     </style>
 </head>
 <body class="game-container">
     <div class="game-wrapper">
+        <h1 class="game-title">Combinar 3 - Emojis (Swipe)</h1>
+        <p class="game-subtitle">Combine três ou mais emojis iguais!</p>
+        
+        <div class="game-area">
+            <div class="game-wrapper">
         <h1 class="game-title">Combinar 3 - Emojis (Swipe)</h1>
         <p class="game-subtitle">Combine três ou mais emojis iguais!</p>
         
@@ -223,9 +230,17 @@
             
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
     <script src="../common.js"></script>
     <script>
+        
+
         
         const gameBoardElement = document.getElementById('game-board');
         const scoreDisplay = document.getElementById('score');
@@ -674,6 +689,7 @@
         });
         document.addEventListener('DOMContentLoaded', resetAndShowStartModal);
 
+    
     
     </script>
 </body>

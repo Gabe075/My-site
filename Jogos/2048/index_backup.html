@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../common.css">
     <style>
         
+        
         * {
             margin: 0;
             padding: 0;
@@ -173,10 +174,16 @@
             .game-overlay p { font-size: 1em; }
         }
     
+    
     </style>
 </head>
 <body class="game-container">
     <div class="game-wrapper">
+        <h1 class="game-title">Jogo 2048 - Animado</h1>
+        <p class="game-subtitle">Combine números para chegar ao 2048!</p>
+        
+        <div class="game-area">
+            <div class="game-wrapper">
         <h1 class="game-title">Jogo 2048 - Animado</h1>
         <p class="game-subtitle">Combine números para chegar ao 2048!</p>
         
@@ -216,9 +223,17 @@
             
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
     <script src="../common.js"></script>
     <script>
+        
+
         
         const gameBoardElement = document.getElementById('game-board');
         const scoreDisplay = document.getElementById('score');
@@ -565,6 +580,7 @@
             openModal('startModal'); 
         });
 
+    
     
     </script>
 </body>

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../common.css">
     <style>
         
+        
         * {
             margin: 0;
             padding: 0;
@@ -283,10 +284,16 @@
             }
         }
     
+    
     </style>
 </head>
 <body class="game-container">
     <div class="game-wrapper">
+        <h1 class="game-title">Acerte a Toupeira</h1>
+        <p class="game-subtitle">Acerte as toupeiras que aparecem!</p>
+        
+        <div class="game-area">
+            <div class="game-wrapper">
         <h1 class="game-title">Acerte a Toupeira</h1>
         <p class="game-subtitle">Acerte as toupeiras que aparecem!</p>
         
@@ -332,9 +339,17 @@
             
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
     <script src="../common.js"></script>
     <script>
+        
+
         
         const gameBoard = document.getElementById('game-board');
         const scoreDisplay = document.getElementById('score');
@@ -515,6 +530,7 @@
         // Inicialização
         resetAndShowStartModal();
 
+    
     
     </script>
 </body>

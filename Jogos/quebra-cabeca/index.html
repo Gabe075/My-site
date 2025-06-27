@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../common.css">
     <style>
         
+        
         * {
             margin: 0;
             padding: 0;
@@ -231,10 +232,16 @@
             }
         }
     
+    
     </style>
 </head>
 <body class="game-container">
     <div class="game-wrapper">
+        <h1 class="game-title">Quebra-Cabeça de Números 4x4</h1>
+        <p class="game-subtitle">Monte a imagem movendo as peças!</p>
+        
+        <div class="game-area">
+            <div class="game-wrapper">
         <h1 class="game-title">Quebra-Cabeça de Números 4x4</h1>
         <p class="game-subtitle">Monte a imagem movendo as peças!</p>
         
@@ -273,9 +280,17 @@
             
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
     <script src="../common.js"></script>
     <script>
+        
+
         
         let board = [];
         let moves = 0;
@@ -439,6 +454,7 @@
                 document.getElementById('winModal').style.display = 'flex';
             }
         }
+    
     
     </script>
 </body>
