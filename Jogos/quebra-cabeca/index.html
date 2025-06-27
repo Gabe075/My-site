@@ -2,266 +2,124 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quebra-Cabeça de Imagem</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quebra-Cabeça de Números 4x4</title>
     <style>
-        :root {
-            --primary-color: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary-color: #ec4899;
-            --accent-color: #06b6d4;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a2e;
-            --bg-tertiary: #16213e;
-            --text-primary: #ffffff;
-            --text-secondary: #a1a1aa;
-            --text-muted: #71717a;
-            
-            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            --gradient-secondary: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            --gradient-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--gradient-bg);
-            color: var(--text-primary);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
+            color: #fff;
             overflow-x: hidden;
         }
-        
-        .back-to-menu {
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in;
+            max-width: 400px;
+            width: 90%;
+            margin: 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 5px;
+            margin: 20px auto;
+            position: relative;
+            width: 330px; /* 4 * 80px + 3 * 5px (gaps) */
+            height: 330px;
+        }
+        .tile {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background 0.2s ease, left 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            color: #333;
+            position: absolute;
+        }
+        .tile:hover {
+            transform: scale(1.05);
+            background: #e0e0e0;
+        }
+        .tile.empty {
+            background: transparent;
+            box-shadow: none;
+            cursor: default;
+        }
+        .tile.empty:hover {
+            transform: none;
+            background: transparent;
+        }
+        .hamburger {
             position: fixed;
             top: 20px;
             left: 20px;
-            z-index: 1000;
-            padding: 0.75rem 1.5rem;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-        
-        .back-to-menu:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-        
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 80px 20px 20px;
-            gap: 20px;
-        }
-        
-        .game-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .game-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .game-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .control-group label {
-            color: #ccd6f6;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        select, button {
-            padding: 10px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ccd6f6;
-            font-size: 1rem;
+            font-size: 30px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            z-index: 2000;
+            color: #fff;
+            transition: transform 0.3s;
         }
-        
-        select:hover, button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+        .hamburger:hover {
+            transform: rotate(90deg);
         }
-        
-        .game-area {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .puzzle-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .puzzle-grid {
-            position: relative;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 10px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .puzzle-piece {
-            position: absolute;
-            cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .puzzle-piece:hover {
-            border-color: rgba(255, 255, 255, 0.6);
-            transform: scale(1.02);
-        }
-        
-        .puzzle-piece.empty {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            cursor: default;
-        }
-        
-        .puzzle-piece.empty:hover {
-            transform: none;
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .reference-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .reference-image {
-            width: 200px;
-            height: 200px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .game-stats {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            min-width: 200px;
-        }
-        
-        .stat-item {
-            margin: 5px 0;
-            color: #ccd6f6;
-        }
-        
-        .stat-value {
-            font-weight: bold;
-            color: #64ffda;
-        }
-        
-        .image-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            max-width: 600px;
-            margin: 20px 0;
-        }
-        
-        .image-option {
-            width: 120px;
-            height: 120px;
-            border-radius: 10px;
-            background-size: cover;
-            background-position: center;
-            border: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .image-option:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.05);
-        }
-        
-        .image-option.selected {
-            border-color: #64ffda;
-            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
-        }
-        
-        .image-option::after {
-            content: '';
-            position: absolute;
+        .sidebar {
+            position: fixed;
             top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #2c3e50;
+            color: #fff;
+            transition: left 0.3s ease-in-out;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .sidebar.open {
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            transition: opacity 0.3s ease;
         }
-        
-        .image-option:hover::after {
-            opacity: 0;
+        .sidebar a {
+            display: block;
+            color: #fff;
+            padding: 15px;
+            text-decoration: none;
+            font-size: 1.1em;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: background 0.2s;
         }
-        
+        .sidebar a:hover {
+            background: #34495e;
+        }
         .modal {
             display: none;
             position: fixed;
@@ -269,968 +127,301 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 3000;
             justify-content: center;
             align-items: center;
         }
-        
         .modal-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
             border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
+            max-width: 500px;
             width: 90%;
             text-align: center;
-            color: #ccd6f6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transform: scale(0.5);
+            animation: popIn 0.5s ease-out forwards;
+            color: #fff;
         }
-        
-        .modal h2 {
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-content h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .modal-content p {
+            font-size: 1.2em;
             margin-bottom: 20px;
-            color: #64ffda;
         }
-        
-        .difficulty-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .difficulty-btn {
+        .modal-content button {
             padding: 12px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            border-radius: 25px;
-            color: white;
-            font-weight: bold;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 1em;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        
-        .difficulty-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        .modal-content button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
-        
-        .win-message {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
-            border-radius: 15px;
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+        .close:hover {
+            transform: rotate(90deg);
+        }
+        #moves {
             margin: 20px 0;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 5px;
         }
-        
-        @media (max-width: 768px) {
-            .game-area {
-                flex-direction: column;
-                align-items: center;
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: repeat(4, 60px);
+                width: 245px; /* 4 * 60px + 3 * 5px */
+                height: 245px;
             }
-            
-            .reference-image {
-                width: 150px;
-                height: 150px;
+            .tile {
+                width: 60px;
+                height: 60px;
+                font-size: 18px;
             }
-            
-            .image-selector {
-                grid-template-columns: repeat(3, 1fr);
+            h1 {
+                font-size: 1.8em;
             }
-            
-            .image-option {
-                width: 100px;
-                height: 100px;
+            .container {
+                padding: 15px;
             }
-            
-            .game-title {
-                font-size: 2rem;
+            .modal-content {
+                padding: 20px;
+            }
+            .modal-content h2 {
+                font-size: 1.5em;
+            }
+            .modal-content p {
+                font-size: 1em;
+            }
+            .modal-content button {
+                padding: 10px 20px;
+                font-size: 0.9em;
             }
         }
     </style>
 </head>
 <body>
-    <a href="../../index.html" class="back-to-menu">
-        <i class="fas fa-arrow-left"></i> Voltar ao Menu
-    </a>
-    
-    <div class="game-container">
-        <h1 class="game-title">Quebra-Cabeça de Imagem</h1>
-        <p class="game-subtitle">Monte a imagem deslizando as peças!</p>
-        
-        <div class="game-controls">
-            <div class="control-group">
-                <label>Dificuldade:</label>
-                <select id="difficultySelect">
-                    <option value="3">Fácil (3x3)</option>
-                    <option value="4" selected>Médio (4x4)</option>
-                    <option value="5">Difícil (5x5)</option>
-                </select>
-            </div>
-            <button onclick="showImageSelector()">
-                <i class="fas fa-image"></i> Escolher Imagem
-            </button>
-            <button onclick="startNewGame()">
-                <i class="fas fa-play"></i> Novo Jogo
-            </button>
-        </div>
-        
-        <div class="game-area">
-            <div class="puzzle-container">
-                <div id="puzzleGrid" class="puzzle-grid"></div>
-                <div class="game-stats">
-                    <div class="stat-item">Movimentos: <span id="moveCount" class="stat-value">0</span></div>
-                    <div class="stat-item">Tempo: <span id="timeCount" class="stat-value">00:00</span></div>
-                </div>
-            </div>
-            
-            <div class="reference-container">
-                <h3 style="color: #ccd6f6; margin-bottom: 10px;">Imagem de Referência</h3>
-                <div id="referenceImage" class="reference-image"></div>
-            </div>
-        </div>
+    <div class="hamburger">☰</div>
+    <div class="sidebar" id="sidebar">
+        <a onclick="startGame()">🔄 Novo Jogo</a>
     </div>
-    
-    <!-- Modal de Seleção de Imagem -->
-    <div id="imageModal" class="modal">
-        <div class="modal-content">
-            <h2><i class="fas fa-images"></i> Escolha uma Imagem</h2>
-            <p>Selecione uma das imagens abaixo para montar o quebra-cabeça:</p>
-            <div id="imageSelector" class="image-selector"></div>
-            <div style="margin-top: 20px;">
-                <button onclick="closeImageModal()" style="margin-right: 10px;">Cancelar</button>
-                <button onclick="confirmImageSelection()" class="difficulty-btn">Confirmar</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de Vitória -->
-    <div id="winModal" class="modal">
-        <div class="modal-content">
-            <h2><i class="fas fa-trophy"></i> Parabéns!</h2>
-            <div class="win-message">
-                <p>Você completou o quebra-cabeça!</p>
-                <p>Movimentos: <span id="finalMoves"></span></p>
-                <p>Tempo: <span id="finalTime"></span></p>
-            </div>
-            <button onclick="closeWinModal()" class="difficulty-btn">Novo Jogo</button>
-        </div>
-    </div>
-    
-    <script>
-        // Configurações do jogo
-        let currentImage = 'images/jungle_animals.jpg';
-        let gridSize = 4;
-        let puzzleBoard = [];
-        let moveCount = 0;
-        let startTime = null;
-        let gameTimer = null;
-        let selectedImageIndex = 0;
-        
-        // Lista de imagens disponíveis
-        const availableImages = [
-            { src: 'images/jungle_animals.jpg', name: 'Animais da Selva' },
-            { src: 'images/africa_animals.jpg', name: 'Animais da África' },
-            { src: 'images/mountain_lake.jpg', name: 'Lago na Montanha' },
-            { src: 'images/mountain_cottage.jpg', name: 'Casa na Montanha' },
-            { src: 'images/beautiful_landscape.jpg', name: 'Paisagem Linda' },
-            { src: 'images/cozy_porch.jpg', name: 'Varanda Aconchegante' },
-            { src: 'images/autumn_porch.jpg', name: 'Varanda de Outono' },
-            { src: 'images/space_galaxy.jpg', name: 'Galáxia Espacial' },
-            { src: 'images/underwater_world.jpg', name: 'Mundo Submarino' },
-            { src: 'images/fantasy_castle.jpg', name: 'Castelo Fantástico' }
-        ];
-        
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            setupImageSelector();
-            updateReferenceImage();
-            showImageSelector();
-        });
-        
-        function setupImageSelector() {
-            const selector = document.getElementById('imageSelector');
-            selector.innerHTML = '';
-            
-            availableImages.forEach((image, index) => {
-                const option = document.createElement('div');
-                option.className = 'image-option';
-                option.style.backgroundImage = `url(${image.src})`;
-                option.title = image.name;
-                option.onclick = () => selectImage(index);
-                
-                if (index === selectedImageIndex) {
-                    option.classList.add('selected');
-                }
-                
-                selector.appendChild(option);
-            });
-        }
-        
-        function selectImage(index) {
-            selectedImageIndex = index;
-            document.querySelectorAll('.image-option').forEach((option, i) => {
-                option.classList.toggle('selected', i === index);
-            });
-        }
-        
-        function showImageSelector() {
-            document.getElementById('imageModal').style.display = 'flex';
-        }
-        
-        function closeImageModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-        
-        function confirmImageSelection() {
-            currentImage = availableImages[selectedImageIndex].src;
-            updateReferenceImage();
-            closeImageModal();
-            startNewGame();
-        }
-        
-        function updateReferenceImage() {
-            const referenceImg = document.getElementById('referenceImage');
-            referenceImg.style.backgroundImage = `url(${currentImage})`;
-        }
-        
-        function startNewGame() {
-            gridSize = parseInt(document.getElementById('difficultySelect').value);
-            moveCount = 0;
-            startTime = Date.now();
-            
-            updateMoveCount();
-            startTimer();
-            initializePuzzle();
-            shufflePuzzle();
-            renderPuzzle();
-        }
-        
-        function initializePuzzle() {
-            puzzleBoard = [];
-            for (let i = 0; i < gridSize * gridSize; i++) {
-                puzzleBoard.push(i);
-            }
-        }
-        
-        function shufflePuzzle() {
-            // Embaralha garantindo que seja solucionável
-            do {
-                for (let i = puzzleBoard.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [puzzleBoard[i], puzzleBoard[j]] = [puzzleBoard[j], puzzleBoard[i]];
-                }
-            } while (!isSolvable() || isSolved());
-        }
-        
-        function isSolvable() {
-            let inversions = 0;
-            const flatBoard = puzzleBoard.filter(num => num !== 0);
-            
-            for (let i = 0; i < flatBoard.length; i++) {
-                for (let j = i + 1; j < flatBoard.length; j++) {
-                    if (flatBoard[i] > flatBoard[j]) {
-                        inversions++;
-                    }
-                }
-            }
-            
-            if (gridSize % 2 === 1) {
-                return inversions % 2 === 0;
-            } else {
-                const emptyRow = Math.floor(puzzleBoard.indexOf(0) / gridSize);
-                return (inversions + emptyRow) % 2 === 1;
-            }
-        }
-        
-        function renderPuzzle() {
-            const grid = document.getElementById('puzzleGrid');
-            const pieceSize = Math.min(300 / gridSize, 80);
-            const gridPixelSize = pieceSize * gridSize;
-            
-            grid.style.width = `${gridPixelSize}px`;
-            grid.style.height = `${gridPixelSize}px`;
-            grid.innerHTML = '';
-            
-            puzzleBoard.forEach((pieceNumber, index) => {
-                const piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
-                
-                const row = Math.floor(index / gridSize);
-                const col = index % gridSize;
-                
-                piece.style.width = `${pieceSize}px`;
-                piece.style.height = `${pieceSize}px`;
-                piece.style.left = `${col * pieceSize}px`;
-                piece.style.top = `${row * pieceSize}px`;
-                
-                if (pieceNumber === 0) {
-                    piece.classList.add('empty');
-                } else {
-                    const originalRow = Math.floor((pieceNumber - 1) / gridSize);
-                    const originalCol = (pieceNumber - 1) % gridSize;
-                    
-                    const bgPosX = -(originalCol * pieceSize);
-                    const bgPosY = -(originalRow * pieceSize);
-                    const bgSize = pieceSize * gridSize;
-                    
-                    piece.style.backgroundImage = `url(${currentImage})`;
-                    piece.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-                    piece.style.backgroundSize = `${bgSize}px ${bgSize}px`;
-                    
-                    piece.onclick = () => movePiece(index);
-                }
-                
-                grid.appendChild(piece);
-            });
-        }
-        
-        function movePiece(clickedIndex) {
-            const emptyIndex = puzzleBoard.indexOf(0);
-            
-            if (canMove(clickedIndex, emptyIndex)) {
-                [puzzleBoard[clickedIndex], puzzleBoard[emptyIndex]] = [puzzleBoard[emptyIndex], puzzleBoard[clickedIndex]];
-                
-                moveCount++;
-                updateMoveCount();
-                renderPuzzle();
-                
-                if (isSolved()) {
-                    setTimeout(showWinModal, 300);
-                }
-            }
-        }
-        
-        function canMove(clickedIndex, emptyIndex) {
-            const clickedRow = Math.floor(clickedIndex / gridSize);
-            const clickedCol = clickedIndex % gridSize;
-            const emptyRow = Math.floor(emptyIndex / gridSize);
-            const emptyCol = emptyIndex % gridSize;
-            
-            const rowDiff = Math.abs(clickedRow - emptyRow);
-            const colDiff = Math.abs(clickedCol - emptyCol);
-            
-            return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
-        }
-        
-        function isSolved() {
-            for (let i = 0; i < puzzleBoard.length - 1; i++) {
-                if (puzzleBoard[i] !== i + 1) {
-                    return false;
-                }
-            }
-            return puzzleBoard[puzzleBoard.length - 1] === 0;
-        }
-        
-        function updateMoveCount() {
-            document.getElementById('moveCount').textContent = moveCount;
-        }
-        
-        function startTimer() {
-            if (gameTimer) clearInterval(gameTimer);
-            
-            gameTimer = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-                const seconds = (elapsed % 60).toString().padStart(2, '0');
-                document.getElementById('timeCount').textContent = `${minutes}:${seconds}`;
-            }, 1000);
-        }
-        
-        function showWinModal() {
-            clearInterval(gameTimer);
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-            const seconds = (elapsed % 60).toString().padStart(2, '0');
-            
-            document.getElementById('finalMoves').textContent = moveCount;
-            document.getElementById('finalTime').textContent = `${minutes}:${seconds}`;
-            document.getElementById('winModal').style.display = 'flex';
-        }
-        
-        function closeWinModal() {
-            document.getElementById('winModal').style.display = 'none';
-            showImageSelector();
-        }
-    </script>
-</body>
-</html>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            gap: 20px;
-        }
-        
-        .game-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .game-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .control-group label {
-            color: #ccd6f6;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        select, button {
-            padding: 10px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ccd6f6;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        select:hover, button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .game-area {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .puzzle-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .puzzle-grid {
-            position: relative;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 10px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .puzzle-piece {
-            position: absolute;
-            cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .puzzle-piece:hover {
-            border-color: rgba(255, 255, 255, 0.6);
-            transform: scale(1.02);
-        }
-        
-        .puzzle-piece.empty {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            cursor: default;
-        }
-        
-        .puzzle-piece.empty:hover {
-            transform: none;
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .reference-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .reference-image {
-            width: 200px;
-            height: 200px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        
-        .game-stats {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            min-width: 200px;
-        }
-        
-        .stat-item {
-            margin: 5px 0;
-            color: #ccd6f6;
-        }
-        
-        .stat-value {
-            font-weight: bold;
-            color: #64ffda;
-        }
-        
-        .image-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            max-width: 600px;
-            margin: 20px 0;
-        }
-        
-        .image-option {
-            width: 120px;
-            height: 120px;
-            border-radius: 10px;
-            background-size: cover;
-            background-position: center;
-            border: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .image-option:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.05);
-        }
-        
-        .image-option.selected {
-            border-color: #64ffda;
-            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
-        }
-        
-        .image-option::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            transition: opacity 0.3s ease;
-        }
-        
-        .image-option:hover::after {
-            opacity: 0;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            width: 90%;
-            text-align: center;
-            color: #ccd6f6;
-        }
-        
-        .modal h2 {
-            margin-bottom: 20px;
-            color: #64ffda;
-        }
-        
-        .difficulty-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .difficulty-btn {
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 25px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .difficulty-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .win-message {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(100, 255, 218, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-        
-        @media (max-width: 768px) {
-            .game-area {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .reference-image {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .image-selector {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .image-option {
-                width: 100px;
-                height: 100px;
-            }
-        }
-    </style>
-</head>
-<body class="game-container">
-    <div class="game-wrapper">
-        <h1 class="game-title">Quebra-Cabeça de Imagem</h1>
-        <p class="game-subtitle">Monte a imagem deslizando as peças!</p>
-        
-        <div class="game-controls">
-            <div class="control-group">
-                <label>Dificuldade:</label>
-                <select id="difficultySelect">
-                    <option value="3">Fácil (3x3)</option>
-                    <option value="4" selected>Médio (4x4)</option>
-                    <option value="5">Difícil (5x5)</option>
-                </select>
-            </div>
-            <button onclick="showImageSelector()">
-                <i class="fas fa-image"></i> Escolher Imagem
-            </button>
-            <button onclick="startNewGame()">
-                <i class="fas fa-play"></i> Novo Jogo
-            </button>
-        </div>
-        
-        <div class="game-area">
-            <div class="puzzle-container">
-                <div id="puzzleGrid" class="puzzle-grid"></div>
-                <div class="game-stats">
-                    <div class="stat-item">Movimentos: <span id="moveCount" class="stat-value">0</span></div>
-                    <div class="stat-item">Tempo: <span id="timeCount" class="stat-value">00:00</span></div>
-                </div>
-            </div>
-            
-            <div class="reference-container">
-                <h3 style="color: #ccd6f6; margin-bottom: 10px;">Imagem de Referência</h3>
-                <div id="referenceImage" class="reference-image"></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de Seleção de Imagem -->
-    <div id="imageModal" class="modal">
-        <div class="modal-content">
-            <h2><i class="fas fa-images"></i> Escolha uma Imagem</h2>
-            <p>Selecione uma das imagens abaixo para montar o quebra-cabeça:</p>
-            <div id="imageSelector" class="image-selector"></div>
-            <div style="margin-top: 20px;">
-                <button onclick="closeImageModal()" style="margin-right: 10px;">Cancelar</button>
-                <button onclick="confirmImageSelection()" class="difficulty-btn">Confirmar</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de Vitória -->
-    <div id="winModal" class="modal">
-        <div class="modal-content">
-            <h2><i class="fas fa-trophy"></i> Parabéns!</h2>
-            <div class="win-message">
-                <p>Você completou o quebra-cabeça!</p>
-                <p>Movimentos: <span id="finalMoves"></span></p>
-                <p>Tempo: <span id="finalTime"></span></p>
-            </div>
-            <button onclick="closeWinModal()" class="difficulty-btn">Novo Jogo</button>
-        </div>
-    </div>
-    
-    <script src="../common.js"></script>
-    <script>
-        // Configurações do jogo
-        let currentImage = 'images/jungle_animals.jpg';
-        let gridSize = 4;
-        let puzzleBoard = [];
-        let moveCount = 0;
-        let startTime = null;
-        let gameTimer = null;
-        let selectedImageIndex = 0;
-        
-        // Lista de imagens disponíveis
-        const availableImages = [
-            { src: 'images/jungle_animals.jpg', name: 'Animais da Selva' },
-            { src: 'images/africa_animals.jpg', name: 'Animais da África' },
-            { src: 'images/mountain_lake.jpg', name: 'Lago na Montanha' },
-            { src: 'images/mountain_cottage.jpg', name: 'Casa na Montanha' },
-            { src: 'images/beautiful_landscape.jpg', name: 'Paisagem Linda' },
-            { src: 'images/cozy_porch.jpg', name: 'Varanda Aconchegante' },
-            { src: 'images/autumn_porch.jpg', name: 'Varanda de Outono' },
-            { src: 'images/space_galaxy.jpg', name: 'Galáxia Espacial' },
-            { src: 'images/underwater_world.jpg', name: 'Mundo Submarino' },
-            { src: 'images/fantasy_castle.jpg', name: 'Castelo Fantástico' }
-        ];
-        
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            setupImageSelector();
-            updateReferenceImage();
-            showImageSelector();
-        });
-        
-        function setupImageSelector() {
-            const selector = document.getElementById('imageSelector');
-            selector.innerHTML = '';
-            
-            availableImages.forEach((image, index) => {
-                const option = document.createElement('div');
-                option.className = 'image-option';
-                option.style.backgroundImage = `url(${image.src})`;
-                option.title = image.name;
-                option.onclick = () => selectImage(index);
-                
-                if (index === selectedImageIndex) {
-                    option.classList.add('selected');
-                }
-                
-                selector.appendChild(option);
-            });
-        }
-        
-        function selectImage(index) {
-            selectedImageIndex = index;
-            document.querySelectorAll('.image-option').forEach((option, i) => {
-                option.classList.toggle('selected', i === index);
-            });
-        }
-        
-        function showImageSelector() {
-            document.getElementById('imageModal').style.display = 'flex';
-        }
-        
-        function closeImageModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-        
-        function confirmImageSelection() {
-            currentImage = availableImages[selectedImageIndex].src;
-            updateReferenceImage();
-            closeImageModal();
-            startNewGame();
-        }
-        
-        function updateReferenceImage() {
-            const referenceImg = document.getElementById('referenceImage');
-            referenceImg.style.backgroundImage = `url(${currentImage})`;
-        }
-        
-        function startNewGame() {
-            gridSize = parseInt(document.getElementById('difficultySelect').value);
-            moveCount = 0;
-            startTime = Date.now();
-            
-            updateMoveCount();
-            startTimer();
-            initializePuzzle();
-            shufflePuzzle();
-            renderPuzzle();
-        }
-        
-        function initializePuzzle() {
-            puzzleBoard = [];
-            for (let i = 0; i < gridSize * gridSize; i++) {
-                puzzleBoard.push(i);
-            }
-        }
-        
-        function shufflePuzzle() {
-            // Embaralha garantindo que seja solucionável
-            do {
-                for (let i = puzzleBoard.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [puzzleBoard[i], puzzleBoard[j]] = [puzzleBoard[j], puzzleBoard[i]];
-                }
-            } while (!isSolvable() || isSolved());
-        }
-        
-        function isSolvable() {
-            let inversions = 0;
-            const flatBoard = puzzleBoard.filter(num => num !== 0);
-            
-            for (let i = 0; i < flatBoard.length; i++) {
-                for (let j = i + 1; j < flatBoard.length; j++) {
-                    if (flatBoard[i] > flatBoard[j]) {
-                        inversions++;
-                    }
-                }
-            }
-            
-            if (gridSize % 2 === 1) {
-                return inversions % 2 === 0;
-            } else {
-                const emptyRow = Math.floor(puzzleBoard.indexOf(0) / gridSize);
-                return (inversions + emptyRow) % 2 === 1;
-            }
-        }
-        
-        function renderPuzzle() {
-            const grid = document.getElementById('puzzleGrid');
-            const pieceSize = Math.min(300 / gridSize, 80);
-            const gridPixelSize = pieceSize * gridSize;
-            
-            grid.style.width = `${gridPixelSize}px`;
-            grid.style.height = `${gridPixelSize}px`;
-            grid.innerHTML = '';
-            
-            puzzleBoard.forEach((pieceNumber, index) => {
-                const piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
-                
-                const row = Math.floor(index / gridSize);
-                const col = index % gridSize;
-                
-                piece.style.width = `${pieceSize}px`;
-                piece.style.height = `${pieceSize}px`;
-                piece.style.left = `${col * pieceSize}px`;
-                piece.style.top = `${row * pieceSize}px`;
-                
-                if (pieceNumber === 0) {
-                    piece.classList.add('empty');
-                } else {
-                    const originalRow = Math.floor((pieceNumber - 1) / gridSize);
-                    const originalCol = (pieceNumber - 1) % gridSize;
-                    
-                    const bgPosX = -(originalCol * pieceSize);
-                    const bgPosY = -(originalRow * pieceSize);
-                    const bgSize = pieceSize * gridSize;
-                    
-                    piece.style.backgroundImage = `url(${currentImage})`;
-                    piece.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-                    piece.style.backgroundSize = `${bgSize}px ${bgSize}px`;
-                    
-                    piece.onclick = () => movePiece(index);
-                }
-                
-                grid.appendChild(piece);
-            });
-        }
-        
-        function movePiece(clickedIndex) {
-            const emptyIndex = puzzleBoard.indexOf(0);
-            
-            if (canMove(clickedIndex, emptyIndex)) {
-                [puzzleBoard[clickedIndex], puzzleBoard[emptyIndex]] = [puzzleBoard[emptyIndex], puzzleBoard[clickedIndex]];
-                
-                moveCount++;
-                updateMoveCount();
-                renderPuzzle();
-                
-                if (isSolved()) {
-                    setTimeout(showWinModal, 300);
-                }
-            }
-        }
-        
-        function canMove(clickedIndex, emptyIndex) {
-            const clickedRow = Math.floor(clickedIndex / gridSize);
-            const clickedCol = clickedIndex % gridSize;
-            const emptyRow = Math.floor(emptyIndex / gridSize);
-            const emptyCol = emptyIndex % gridSize;
-            
-            const rowDiff = Math.abs(clickedRow - emptyRow);
-            const colDiff = Math.abs(clickedCol - emptyCol);
-            
-            return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
-        }
-        
-        function isSolved() {
-            for (let i = 0; i < puzzleBoard.length - 1; i++) {
-                if (puzzleBoard[i] !== i + 1) {
-                    return false;
-                }
-            }
-            return puzzleBoard[puzzleBoard.length - 1] === 0;
-        }
-        
-        function updateMoveCount() {
-            document.getElementById('moveCount').textContent = moveCount;
-        }
-        
-        function startTimer() {
-            if (gameTimer) clearInterval(gameTimer);
-            
-            gameTimer = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-                const seconds = (elapsed % 60).toString().padStart(2, '0');
-                document.getElementById('timeCount').textContent = `${minutes}:${seconds}`;
-            }, 1000);
-        }
-        
-        function showWinModal() {
-            clearInterval(gameTimer);
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-            const seconds = (elapsed % 60).toString().padStart(2, '0');
-            
-            document.getElementById('finalMoves').textContent = moveCount;
-            document.getElementById('finalTime').textContent = `${minutes}:${seconds}`;
-            document.getElementById('winModal').style.display = 'flex';
-        }
-        
-        function closeWinModal() {
-            document.getElementById('winModal').style.display = 'none';
-            showImageSelector();
-        }
-    </script>
-</body>
-</html>
 
+    <div class="container">
+        <h1>Quebra-Cabeça de Números</h1>
+        <div id="moves">Jogadas: 0</div>
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="startModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('startModal')">×</span>
+            <h2>Quebra-Cabeça de Números</h2>
+            <p>Organize os números em ordem!</p>
+            <button onclick="startGame()">Iniciar</button>
+        </div>
+    </div>
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('winModal')">×</span>
+            <h2>Parabéns!</h2>
+            <p>Jogadas: <span id="finalMoves"></span></p>
+            <button onclick="startGame()">Novo Jogo</button>
+        </div>
+    </div>
+
+    <script>
+        let board = [];
+        let moves = 0;
+        const grid = document.getElementById('grid');
+        const movesDisplay = document.getElementById('moves');
+        const size = 4; // Tabuleiro 4x4
+        const tileSize = window.innerWidth <= 600 ? 60 : 80; // Ajuste para telas menores
+        const gap = 5;
+        let tiles = []; // Para armazenar as peças e permitir animações
+
+        // Inicializar modal de início
+        document.getElementById('startModal').style.display = 'flex';
+
+        // Sidebar e eventos
+        const hamburger = document.querySelector('.hamburger');
+        const sidebar = document.getElementById('sidebar');
+        hamburger.addEventListener('click', () => sidebar.classList.toggle('open'));
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('#sidebar') && !event.target.closest('.hamburger') && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            sidebar.classList.remove('open');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function startGame() {
+            closeModal('startModal');
+            grid.innerHTML = '';
+            moves = 0;
+            movesDisplay.textContent = `Jogadas: ${moves}`;
+            initializeBoard();
+            shuffleBoard();
+            renderBoard();
+        }
+
+        function initializeBoard() {
+            board = [];
+            tiles = [];
+            for (let i = 0; i < size * size; i++) {
+                board.push(i); // 0 representa o espaço vazio
+            }
+        }
+
+        function shuffleBoard() {
+            // Embaralha o tabuleiro de forma que seja solucionável
+            do {
+                for (let i = board.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [board[i], board[j]] = [board[j], board[i]];
+                }
+            } while (!isSolvable(board));
+        }
+
+        function isSolvable(board) {
+            let inversions = 0;
+            for (let i = 0; i < board.length; i++) {
+                for (let j = i + 1; j < board.length; j++) {
+                    if (board[i] > board[j] && board[i] !== 0 && board[j] !== 0) {
+                        inversions++;
+                    }
+                }
+            }
+            // No tabuleiro 4x4, o número de inversões deve ser par para ser solucionável
+            return inversions % 2 === 0;
+        }
+
+        function renderBoard() {
+            grid.innerHTML = ''; // Limpar o grid
+            tiles = []; // Limpar o array de tiles
+
+            board.forEach((number, index) => {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                if (number === 0) {
+                    tile.classList.add('empty');
+                } else {
+                    tile.textContent = number;
+                }
+                tile.dataset.index = index;
+                tile.dataset.number = number;
+
+                // Calcular posição para animação
+                const row = Math.floor(index / size);
+                const col = index % size;
+                tile.style.left = `${col * (tileSize + gap)}px`;
+                tile.style.top = `${row * (tileSize + gap)}px`;
+
+                // Adicionar evento de clique apenas para peças não vazias
+                if (number !== 0) {
+                    tile.addEventListener('click', () => moveTile(index));
+                }
+
+                grid.appendChild(tile);
+                tiles[number] = tile; // Armazenar a peça
+            });
+        }
+
+        function moveTile(index) {
+            const emptyIndex = board.indexOf(0);
+            if (canMove(index, emptyIndex)) {
+                // Animação: mover a peça clicada e o espaço vazio
+                const tile = tiles[board[index]];
+                const emptyTile = tiles[0];
+
+                const row = Math.floor(index / size);
+                const col = index % size;
+                const emptyRow = Math.floor(emptyIndex / size);
+                const emptyCol = emptyIndex % size;
+
+                // Atualizar posições para animação
+                tile.style.left = `${emptyCol * (tileSize + gap)}px`;
+                tile.style.top = `${emptyRow * (tileSize + gap)}px`;
+                emptyTile.style.left = `${col * (tileSize + gap)}px`;
+                emptyTile.style.top = `${row * (tileSize + gap)}px`;
+
+                // Atualizar o array board
+                [board[index], board[emptyIndex]] = [board[emptyIndex], board[index]];
+
+                // Atualizar os tiles
+                tiles[board[index]] = tile;
+                tiles[board[emptyIndex]] = emptyTile;
+
+                moves++;
+                movesDisplay.textContent = `Jogadas: ${moves}`;
+
+                // Renderizar novamente após a animação
+                setTimeout(() => {
+                    renderBoard();
+                    checkWin();
+                }, 200); // Tempo da animação (0.2s)
+            }
+        }
+
+        function canMove(index, emptyIndex) {
+            const row = Math.floor(index / size);
+            const col = index % size;
+            const emptyRow = Math.floor(emptyIndex / size);
+            const emptyCol = emptyIndex % size;
+
+            // Verifica se o movimento é para uma posição adjacente (cima, baixo, esquerda, direita)
+            return (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
+                   (col === emptyCol && Math.abs(row - emptyRow) === 1);
+        }
+
+        function checkWin() {
+            const winningBoard = [];
+            for (let i = 1; i < size * size; i++) {
+                winningBoard.push(i);
+            }
+            winningBoard.push(0); // Última posição é o espaço vazio
+
+            if (board.every((val, idx) => val === winningBoard[idx])) {
+                document.getElementById('finalMoves').textContent = moves;
+                document.getElementById('winModal').style.display = 'flex';
+            }
+        }
+    </script>
+</body>
+</html>
