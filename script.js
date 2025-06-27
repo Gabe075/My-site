@@ -170,7 +170,7 @@ const jogos = [
     },
     {
         nome: "Quebra Cabeça Imagem",
-        pasta: "quebra-cabeca",
+        pasta: "quebra-cabeca-t",
         categoria: "puzzle",
         icone: "fas fa-image",
         dificuldade: 3,
