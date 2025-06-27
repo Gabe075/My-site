@@ -1,4 +1,67 @@
-<script type="text/javascript">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quebra-Cabeça de Imagem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../common.css">
+    <style>
+        
+    </style>
+</head>
+<body class="game-container">
+    <div class="game-wrapper">
+        <h1 class="game-title">Quebra-Cabeça de Imagem</h1>
+        <p class="game-subtitle">Monte a imagem deslizando as peças!</p>
+        
+        <div class="game-area">
+            <div class="hamburger">☰</div>
+    <div id="sidebar" class="sidebar">
+        <a href="#" onclick="openModal('startModal')">🔄 Novo Jogo</a>
+    </div>
+    <div class="container">
+        <h1>Quebra-Cabeça de Imagem</h1>
+        <div id="moves">Jogadas: 0</div>
+        <div id="grid" class="grid"></div>
+        <div id="piece-bank" class="piece-bank"></div>
+    </div>
+    <div class="modal" id="startModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('startModal')">×</span>
+            <h2>Quebra-Cabeça de Imagem</h2>
+            <p>Escolha uma imagem e dificuldade:</p>
+            <div class="image-selector">
+                <div class="image-option" data-image="puzzle_image1.png" onclick="selectImage('puzzle_image1.png')"></div>
+                <div class="image-option" data-image="puzzle_image2.png" onclick="selectImage('puzzle_image2.png')"></div>
+                <div class="image-option" data-image="puzzle_image3.png" onclick="selectImage('puzzle_image3.png')"></div>
+            </div>
+            <div class="difficulty-selector">
+                <button id="diff-3" class="difficulty-btn" onclick="selectDifficulty(3)">3×3</button>
+                <button id="diff-4" class="difficulty-btn active" onclick="selectDifficulty(4)">4×4</button>
+                <button id="diff-5" class="difficulty-btn" onclick="selectDifficulty(5)">5×5</button>
+            </div>
+            <button onclick="startGame()">Iniciar</button>
+        </div>
+    </div>
+    <div class="modal" id="winModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('winModal')">×</span>
+            <h2>Parabéns!</h2>
+            <p>Você completou o quebra-cabeça em <span id="finalMoves"></span> jogadas!</p>
+            <button onclick="startGame()">Novo Jogo</button>
+        </div>
+    </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
+    
+    <script src="../common.js"></script>
+    <script>
+        
         var gk_isXlsx = false;
         var gk_xlsxFileLookup = {};
         var gk_fileData = {};
@@ -37,51 +100,8 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quebra-Cabeça de Imagem</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="hamburger">☰</div>
-    <div id="sidebar" class="sidebar">
-        <a href="#" onclick="openModal('startModal')">🔄 Novo Jogo</a>
-    </div>
-    <div class="container">
-        <h1>Quebra-Cabeça de Imagem</h1>
-        <div id="moves">Jogadas: 0</div>
-        <div id="grid" class="grid"></div>
-        <div id="piece-bank" class="piece-bank"></div>
-    </div>
-    <div class="modal" id="startModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('startModal')">×</span>
-            <h2>Quebra-Cabeça de Imagem</h2>
-            <p>Escolha uma imagem e dificuldade:</p>
-            <div class="image-selector">
-                <div class="image-option" data-image="puzzle_image1.png" onclick="selectImage('puzzle_image1.png')"></div>
-                <div class="image-option" data-image="puzzle_image2.png" onclick="selectImage('puzzle_image2.png')"></div>
-                <div class="image-option" data-image="puzzle_image3.png" onclick="selectImage('puzzle_image3.png')"></div>
-            </div>
-            <div class="difficulty-selector">
-                <button id="diff-3" class="difficulty-btn" onclick="selectDifficulty(3)">3×3</button>
-                <button id="diff-4" class="difficulty-btn active" onclick="selectDifficulty(4)">4×4</button>
-                <button id="diff-5" class="difficulty-btn" onclick="selectDifficulty(5)">5×5</button>
-            </div>
-            <button onclick="startGame()">Iniciar</button>
-        </div>
-    </div>
-    <div class="modal" id="winModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('winModal')">×</span>
-            <h2>Parabéns!</h2>
-            <p>Você completou o quebra-cabeça em <span id="finalMoves"></span> jogadas!</p>
-            <button onclick="startGame()">Novo Jogo</button>
-        </div>
-    </div>
-    <script src="script.js"></script>
+        
+
+    </script>
 </body>
 </html>

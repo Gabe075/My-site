@@ -2,12 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Cobra</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../common.css">
     <style>
-        
         * {
             margin: 0;
             padding: 0;
@@ -240,16 +237,10 @@
                 font-size: 0.9em;
             }
         }
-    
     </style>
 </head>
-<body class="game-container">
-    <div class="game-wrapper">
-        <h1 class="game-title">Jogo da Cobra</h1>
-        <p class="game-subtitle">Controle a cobra e colete frutas sem bater nas paredes!</p>
-        
-        <div class="game-area">
-            <div class="hamburger">☰</div>
+<body>
+    <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
         <select id="difficulty" onchange="updateDifficulty()">
             <option value="easy">Fácil</option>
@@ -299,16 +290,8 @@
             <button onclick="togglePause()">Continuar</button>
         </div>
     </div>
-        </div>
-        
-        <div class="game-controls">
-            
-        </div>
-    </div>
-    
-    <script src="../common.js"></script>
+
     <script>
-        
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const gridSize = 20;
@@ -480,7 +463,6 @@
                 case 'ArrowRight': changeDirection('right'); break;
             }
         });
-    
     </script>
 </body>
 </html>

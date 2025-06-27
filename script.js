@@ -213,10 +213,25 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', function() {
+    // Esconder overlay de carregamento ao carregar a página
+    hideLoadingOverlay();
+    
     initializeApp();
     populateGamesGrid();
     setupEventListeners();
     updateGameCount();
+});
+
+// Esconder overlay quando o usuário volta à página
+window.addEventListener('pageshow', function(event) {
+    hideLoadingOverlay();
+});
+
+// Esconder overlay quando a página fica visível novamente
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        hideLoadingOverlay();
+    }
 });
 
 // Configurar event listeners

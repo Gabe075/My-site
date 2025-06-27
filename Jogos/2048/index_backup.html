@@ -2,12 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo 2048 - Animado</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../common.css">
     <style>
-        
         * {
             margin: 0;
             padding: 0;
@@ -172,16 +169,10 @@
             .game-overlay h2 { font-size: 2em; }
             .game-overlay p { font-size: 1em; }
         }
-    
     </style>
 </head>
-<body class="game-container">
-    <div class="game-wrapper">
-        <h1 class="game-title">Jogo 2048 - Animado</h1>
-        <p class="game-subtitle">Combine números para chegar ao 2048!</p>
-        
-        <div class="game-area">
-            <div class="hamburger">☰</div>
+<body>
+    <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
         <a onclick="resetAndShowStartModal()">🔄 Novo Jogo</a>
     </div>
@@ -210,16 +201,8 @@
             <button onclick="closeModal('startModal'); initializeGameIfNeeded();">Começar a Jogar!</button>
         </div>
     </div>
-        </div>
-        
-        <div class="game-controls">
-            
-        </div>
-    </div>
-    
-    <script src="../common.js"></script>
+
     <script>
-        
         const gameBoardElement = document.getElementById('game-board');
         const scoreDisplay = document.getElementById('score');
         const highScoreDisplay = document.getElementById('high-score');
@@ -565,7 +548,7 @@
             openModal('startModal'); 
         });
 
-    
     </script>
 </body>
 </html>
+

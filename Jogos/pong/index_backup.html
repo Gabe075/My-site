@@ -2,12 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jogo da Cobra</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../common.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong</title>
+    <link rel="stylesheet" href="../../style.css"> <!-- Ajustado para a raiz -->
     <style>
-        
         * {
             margin: 0;
             padding: 0;
@@ -57,7 +55,7 @@
             margin-bottom: 10px;
         }
         #gameCanvas {
-            background: #fff;
+            background: #000;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 300px;
@@ -67,13 +65,11 @@
         }
         .controls {
             display: grid;
-            grid-template-areas:
-                ". up ."
-                "left down right";
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 15px;
             justify-content: center;
-            width: 280px;
+            width: 190px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -99,10 +95,8 @@
             transform: scale(0.95);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        .control-btn.up { grid-area: up; }
-        .control-btn.left { grid-area: left; }
-        .control-btn.right { grid-area: right; }
-        .control-btn.down { grid-area: down; }
+        .control-btn.up { grid-column: 1; }
+        .control-btn.down { grid-column: 2; }
         .hamburger {
             position: fixed;
             top: 20px;
@@ -226,7 +220,7 @@
                 height: 240px;
             }
             .controls {
-                width: 220px;
+                width: 150px;
             }
             .control-btn {
                 width: 70px;
@@ -240,16 +234,10 @@
                 font-size: 0.9em;
             }
         }
-    
     </style>
 </head>
-<body class="game-container">
-    <div class="game-wrapper">
-        <h1 class="game-title">Jogo da Cobra</h1>
-        <p class="game-subtitle">Controle a cobra e colete frutas sem bater nas paredes!</p>
-        
-        <div class="game-area">
-            <div class="hamburger">☰</div>
+<body>
+    <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
         <select id="difficulty" onchange="updateDifficulty()">
             <option value="easy">Fácil</option>
@@ -261,31 +249,28 @@
     </div>
 
     <div class="container">
-        <h1>Jogo da Cobra</h1>
-        <div id="score">Pontuação: 0</div>
+        <h1>Pong</h1>
+        <div id="score">0 - 0</div>
         <div id="highScore">Recorde: 0</div>
         <canvas id="gameCanvas"></canvas>
         <div class="controls">
-            <div class="control-btn up" ontouchstart="changeDirection('up')" ontouchend="preventDefault(event)">↑</div>
-            <div class="control-btn left" ontouchstart="changeDirection('left')" ontouchend="preventDefault(event)">←</div>
-            <div class="control-btn right" ontouchstart="changeDirection('right')" ontouchend="preventDefault(event)">→</div>
-            <div class="control-btn down" ontouchstart="changeDirection('down')" ontouchend="preventDefault(event)">↓</div>
+            <div class="control-btn up">↑</div>
+            <div class="control-btn down">↓</div>
         </div>
     </div>
 
-    <!-- Modals -->
     <div class="modal" id="startModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('startModal')">×</span>
-            <h2>Jogo da Cobra</h2>
-            <p>Use os botões para mover a cobra 🐍 e comer os emojis! Evite bater nas bordas ou no próprio corpo.</p>
+            <h2>Pong</h2>
+            <p>Use os botões ↑↓ para mover a raquete e rebater a bola 🏐!</p>
             <button onclick="startGame()">Iniciar</button>
         </div>
     </div>
     <div class="modal" id="gameOverModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('gameOverModal')">×</span>
-            <h2>Game Over!</h2>
+            <h2>Fim de Jogo!</h2>
             <p>Pontuação: <span id="finalScore"></span></p>
             <p>Recorde: <span id="finalHighScore"></span></p>
             <button onclick="startGame()">Novo Jogo</button>
@@ -299,34 +284,23 @@
             <button onclick="togglePause()">Continuar</button>
         </div>
     </div>
-        </div>
-        
-        <div class="game-controls">
-            
-        </div>
-    </div>
-    
-    <script src="../common.js"></script>
+
     <script>
-        
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const gridSize = 20;
         const isSmallScreen = window.innerWidth <= 360;
         canvas.width = isSmallScreen ? 240 : 300;
         canvas.height = isSmallScreen ? 240 : 300;
-        const tileSize = canvas.width / gridSize;
-        let snake = [{ x: 10, y: 10 }];
-        let food = { x: 15, y: 15, emoji: '🍎' };
-        let dx = 0;
-        let dy = 0;
-        let score = 0;
-        let highScore = localStorage.getItem('snakeHighScore') || 0;
+        const paddleWidth = 10, paddleHeight = 40, ballSize = 8;
+        let player = { y: canvas.height / 2 - paddleHeight / 2, score: 0, speed: 5 };
+        let opponent = { y: canvas.height / 2 - paddleHeight / 2, score: 0, speed: 4 };
+        let ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 3, dy: 3 };
+        let highScore = localStorage.getItem('pongHighScore') || 0;
         let gameLoopInterval = null;
         let isPaused = false;
-        let difficulty = 'easy';
-        let speed = 100;
-        const emojis = ['🍎', '🍌', '🍇', '🍉', '🍓', '🍕', '🍔', '🌮'];
+        let difficulty = 'medium';
+        let isMovingUp = false;
+        let isMovingDown = false;
 
         document.getElementById('highScore').textContent = `Recorde: ${highScore}`;
         document.getElementById('startModal').style.display = 'flex';
@@ -354,133 +328,162 @@
 
         function updateDifficulty() {
             difficulty = document.getElementById('difficulty').value;
-            speed = difficulty === 'easy' ? 100 : difficulty === 'medium' ? 80 : 60;
-            if (gameLoopInterval && !isPaused) {
-                clearInterval(gameLoopInterval);
-                gameLoopInterval = setInterval(gameLoop, speed);
-            }
+            ball.dx = difficulty === 'easy' ? 2 : difficulty === 'medium' ? 3 : 4;
+            ball.dy = difficulty === 'easy' ? 2 : difficulty === 'medium' ? 3 : 4;
+            opponent.speed = difficulty === 'easy' ? 3 : difficulty === 'medium' ? 4 : 5;
         }
 
         function preventDefault(e) {
             e.preventDefault();
         }
 
-        function changeDirection(direction) {
-            if (isPaused) return;
-            switch (direction) {
-                case 'up':
-                    if (dy !== 1) { dx = 0; dy = -1; }
-                    break;
-                case 'down':
-                    if (dy !== -1) { dx = 0; dy = 1; }
-                    break;
-                case 'left':
-                    if (dx !== 1) { dx = -1; dy = 0; }
-                    break;
-                case 'right':
-                    if (dx !== -1) { dx = 1; dy = 0; }
-                    break;
-            }
+        function setupControls() {
+            const upBtn = document.querySelector('.control-btn.up');
+            const downBtn = document.querySelector('.control-btn.down');
+
+            upBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!isPaused) isMovingUp = true;
+            });
+            upBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isMovingUp = false;
+            });
+            downBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!isPaused) isMovingDown = true;
+            });
+            downBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isMovingDown = false;
+            });
+
+            // Prevenir comportamento padrão de scroll
+            upBtn.addEventListener('touchmove', preventDefault);
+            downBtn.addEventListener('touchmove', preventDefault);
         }
 
         function startGame() {
             closeModal('startModal');
             closeModal('gameOverModal');
-            snake = [{ x: 10, y: 10 }];
-            dx = dy = 0;
-            score = 0;
-            document.getElementById('score').textContent = `Pontuação: ${score}`;
-            generateFood();
+            player = { y: canvas.height / 2 - paddleHeight / 2, score: 0, speed: 5 };
+            opponent = { y: canvas.height / 2 - paddleHeight / 2, score: 0, speed: 4 };
+            ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 3, dy: 3 };
+            document.getElementById('score').textContent = `${player.score} - ${opponent.score}`;
+            updateDifficulty();
             if (gameLoopInterval) clearInterval(gameLoopInterval);
             isPaused = false;
-            gameLoopInterval = setInterval(gameLoop, speed);
+            isMovingUp = false;
+            isMovingDown = false;
+            gameLoopInterval = setInterval(gameLoop, 1000 / 60);
+            setupControls();
         }
 
         function togglePause() {
             if (isPaused) {
                 closeModal('pauseModal');
                 isPaused = false;
-                gameLoopInterval = setInterval(gameLoop, speed);
+                gameLoopInterval = setInterval(gameLoop, 1000 / 60);
             } else {
                 openModal('pauseModal');
                 isPaused = true;
                 clearInterval(gameLoopInterval);
             }
-            sidebar.classList.remove('open');
         }
 
         function gameLoop() {
-            // Atualizar posição da cobra
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-            snake.unshift(head);
+            // Mover raquete do jogador
+            if (isMovingUp && !isMovingDown) {
+                player.y -= player.speed;
+            } else if (isMovingDown && !isMovingUp) {
+                player.y += player.speed;
+            }
+            if (player.y < 0) player.y = 0;
+            if (player.y > canvas.height - paddleHeight) player.y = canvas.height - paddleHeight;
 
-            // Verificar se comeu a comida
-            if (head.x === food.x && head.y === food.y) {
-                score += 10;
-                document.getElementById('score').textContent = `Pontuação: ${score}`;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('snakeHighScore', highScore);
-                    document.getElementById('highScore').textContent = `Recorde: ${highScore}`;
-                }
-                generateFood();
-            } else {
-                snake.pop();
+            // Mover raquete do adversário (IA)
+            if (ball.y < opponent.y + paddleHeight / 2) opponent.y -= opponent.speed;
+            if (ball.y > opponent.y + paddleHeight / 2) opponent.y += opponent.speed;
+            if (opponent.y < 0) opponent.y = 0;
+            if (opponent.y > canvas.height - paddleHeight) opponent.y = canvas.height - paddleHeight;
+
+            // Mover bola
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Colisão com topo e fundo
+            if (ball.y < 0 || ball.y > canvas.height - ballSize) {
+                ball.dy = -ball.dy;
             }
 
-            // Verificar colisão
-            if (head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize ||
-                snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)) {
+            // Colisão com raquetes
+            if (ball.x < paddleWidth && ball.y > player.y && ball.y < player.y + paddleHeight) {
+                ball.dx = -ball.dx * 1.1;
+                ball.x = paddleWidth;
+            }
+            if (ball.x > canvas.width - paddleWidth - ballSize && ball.y > opponent.y && ball.y < opponent.y + paddleHeight) {
+                ball.dx = -ball.dx * 1.1;
+                ball.x = canvas.width - paddleWidth - ballSize;
+            }
+
+            // Gol
+            if (ball.x < 0) {
+                opponent.score++;
+                resetBall();
+            }
+            if (ball.x > canvas.width - ballSize) {
+                player.score++;
+                resetBall();
+            }
+
+            // Atualizar pontuação
+            document.getElementById('score').textContent = `${player.score} - ${opponent.score}`;
+            if (player.score > highScore) {
+                highScore = player.score;
+                localStorage.setItem('pongHighScore', highScore);
+                document.getElementById('highScore').textContent = `Recorde: ${highScore}`;
+            }
+
+            // Fim de jogo (7 pontos)
+            if (player.score >= 7 || opponent.score >= 7) {
                 clearInterval(gameLoopInterval);
-                document.getElementById('finalScore').textContent = score;
+                document.getElementById('finalScore').textContent = `${player.score} - ${opponent.score}`;
                 document.getElementById('finalHighScore').textContent = highScore;
                 openModal('gameOverModal');
-                return;
             }
 
             // Desenhar
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Desenhar a cobra (emoji 🐍)
-            snake.forEach((segment, index) => {
-                ctx.font = index === 0 ? `${tileSize * 1.5}px Arial` : `${tileSize * 1.2}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                if (index === 0) {
-                    // Cabeça com fundo verde claro
-                    ctx.fillStyle = '#33cc33';
-                    ctx.fillRect(segment.x * tileSize, segment.y * tileSize, tileSize, tileSize);
-                }
-                ctx.fillStyle = '#000';
-                ctx.fillText('🐍', (segment.x + 0.5) * tileSize, (segment.y + 0.5) * tileSize);
-            });
-
-            // Desenhar a comida
-            ctx.font = `${tileSize * 1.2}px Arial`;
             ctx.fillStyle = '#000';
-            ctx.fillText(food.emoji, (food.x + 0.5) * tileSize, (food.y + 0.5) * tileSize);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(canvas.width / 2 - 1, 0, 2, canvas.height); // Linha central
+            ctx.fillStyle = '#6e8efb';
+            ctx.fillRect(0, player.y, paddleWidth, paddleHeight);
+            ctx.fillStyle = '#a777e3';
+            ctx.fillRect(canvas.width - paddleWidth, opponent.y, paddleWidth, paddleHeight);
+            ctx.font = `${ballSize * 2}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('🏐', ball.x + ballSize / 2, ball.y + ballSize / 2);
         }
 
-        function generateFood() {
-            food.x = Math.floor(Math.random() * gridSize);
-            food.y = Math.floor(Math.random() * gridSize);
-            food.emoji = emojis[Math.floor(Math.random() * emojis.length)];
-            if (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
-                generateFood();
-            }
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = (Math.random() > 0.5 ? 1 : -1) * (difficulty === 'easy' ? 2 : difficulty === 'medium' ? 3 : 4);
+            ball.dy = (Math.random() > 0.5 ? 1 : -1) * (difficulty === 'easy' ? 2 : difficulty === 'medium' ? 3 : 4);
         }
 
-        // Suporte a teclado (para testes em desktop)
+        // Suporte a teclado (para testes)
         document.addEventListener('keydown', (event) => {
-            switch (event.key) {
-                case 'ArrowUp': changeDirection('up'); break;
-                case 'ArrowDown': changeDirection('down'); break;
-                case 'ArrowLeft': changeDirection('left'); break;
-                case 'ArrowRight': changeDirection('right'); break;
-            }
+            if (event.key === 'ArrowUp') isMovingUp = true;
+            if (event.key === 'ArrowDown') isMovingDown = true;
         });
-    
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'ArrowUp') isMovingUp = false;
+            if (event.key === 'ArrowDown') isMovingDown = false;
+        });
     </script>
 </body>
 </html>

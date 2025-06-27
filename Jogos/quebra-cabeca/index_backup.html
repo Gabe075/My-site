@@ -2,12 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jogo da Memória 4x4</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../common.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quebra-Cabeça de Números 4x4</title>
     <style>
-        
         * {
             margin: 0;
             padding: 0;
@@ -53,40 +50,34 @@
             width: 330px; /* 4 * 80px + 3 * 5px (gaps) */
             height: 330px;
         }
-        .card {
+        .tile {
             width: 80px;
             height: 80px;
             background: #fff;
             border-radius: 10px;
-            font-size: 40px;
+            font-size: 24px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.4s ease, background 0.2s ease;
+            transition: transform 0.2s ease, background 0.2s ease, left 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             color: #333;
             position: absolute;
-            perspective: 1000px;
-            transform-style: preserve-3d;
         }
-        .card:hover {
+        .tile:hover {
             transform: scale(1.05);
             background: #e0e0e0;
         }
-        .card.flipped, .card.matched {
-            background: #ccc;
-            transform: rotateY(180deg);
-            transition: transform 0.4s ease, background 0.2s ease;
+        .tile.empty {
+            background: transparent;
+            box-shadow: none;
+            cursor: default;
         }
-        .card:not(.flipped):not(.matched) {
-            transform: rotateY(0deg);
-            transition: transform 0.4s ease, background 0.2s ease;
-        }
-        .card.initial-show {
-            transform: rotateY(180deg);
-            background: #ccc;
-            transition: transform 0.4s ease, background 0.2s ease;
+        .tile.empty:hover {
+            transform: none;
+            background: transparent;
         }
         .hamburger {
             position: fixed;
@@ -211,10 +202,10 @@
                 width: 245px; /* 4 * 60px + 3 * 5px */
                 height: 245px;
             }
-            .card {
+            .tile {
                 width: 60px;
                 height: 60px;
-                font-size: 30px;
+                font-size: 18px;
             }
             h1 {
                 font-size: 1.8em;
@@ -236,22 +227,16 @@
                 font-size: 0.9em;
             }
         }
-    
     </style>
 </head>
-<body class="game-container">
-    <div class="game-wrapper">
-        <h1 class="game-title">Jogo da Memória 4x4</h1>
-        <p class="game-subtitle">Encontre todos os pares de cartas!</p>
-        
-        <div class="game-area">
-            <div class="hamburger">☰</div>
+<body>
+    <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
-        <a onclick="resetAndShowStartModal()">🔄 Novo Jogo</a>
+        <a onclick="startGame()">🔄 Novo Jogo</a>
     </div>
 
     <div class="container">
-        <h1>Jogo da Memória</h1>
+        <h1>Quebra-Cabeça de Números</h1>
         <div id="moves">Jogadas: 0</div>
         <div class="grid" id="grid"></div>
     </div>
@@ -260,8 +245,8 @@
     <div class="modal" id="startModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('startModal')">×</span>
-            <h2>Jogo da Memória</h2>
-            <p>Encontre todos os pares! As cartas serão mostradas por 3 segundos.</p>
+            <h2>Quebra-Cabeça de Números</h2>
+            <p>Organize os números em ordem!</p>
             <button onclick="startGame()">Iniciar</button>
         </div>
     </div>
@@ -270,36 +255,19 @@
             <span class="close" onclick="closeModal('winModal')">×</span>
             <h2>Parabéns!</h2>
             <p>Jogadas: <span id="finalMoves"></span></p>
-            <button onclick="resetAndShowStartModal()">Novo Jogo</button>
+            <button onclick="startGame()">Novo Jogo</button>
         </div>
     </div>
-        </div>
-        
-        <div class="game-controls">
-            
-        </div>
-    </div>
-    
-    <script src="../common.js"></script>
+
     <script>
-        
-        const allEmojis = [
-            '😀', '😂', '😎', '🤓', '😺', '🐶', '🌟', '⭐', '🌙', '🌞',
-            '🍎', '🍌', '🍇', '🍉', '🍓', '🍕', '🍔', '🌮', '🌭', '🍫',
-            '🚗', '🚲', '✈️', '🚀', '⛵', '🎸', '🎹', '🎺', '🎮', '🎯',
-            '🏀', '⚽', '🏈', '🎱', '🎲', '🎴', '🌳', '🌴', '🌷', '🌹',
-            '🍀', '🌻', '🍁', '🎄', '🎆', '🎇', '💎', '💰', '💡', '🔧',
-            '🔨', '⏰', '⏳', '📱', '💻', '📸', '🎥', '🎧', '🔊', '🎤',
-            '🎸', '🎻', '🎷', '🥁', '🎬', '🎭'
-        ];
-        let cards = [];
-        let flippedCards = [];
-        let matchedPairs = 0;
+        let board = [];
         let moves = 0;
         const grid = document.getElementById('grid');
         const movesDisplay = document.getElementById('moves');
+        const size = 4; // Tabuleiro 4x4
         const tileSize = window.innerWidth <= 600 ? 60 : 80; // Ajuste para telas menores
         const gap = 5;
+        let tiles = []; // Para armazenar as peças e permitir animações
 
         // Inicializar modal de início
         document.getElementById('startModal').style.display = 'flex';
@@ -323,108 +291,137 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        function resetAndShowStartModal() {
-            // Resetar o tabuleiro imediatamente
+        function startGame() {
+            closeModal('startModal');
             grid.innerHTML = '';
-            cards = [];
-            flippedCards = [];
-            matchedPairs = 0;
             moves = 0;
             movesDisplay.textContent = `Jogadas: ${moves}`;
-            closeModal('winModal'); // Fechar winModal se aberto
-            openModal('startModal'); // Mostrar o modal de início
+            initializeBoard();
+            shuffleBoard();
+            renderBoard();
         }
 
-        function startGame() {
-            // Fechar o modal de início automaticamente
-            closeModal('startModal');
-            // Resetar estados
-            grid.innerHTML = '';
-            cards = [];
-            flippedCards = [];
-            matchedPairs = 0;
-            moves = 0;
-            movesDisplay.textContent = `Jogadas: ${moves}`;
+        function initializeBoard() {
+            board = [];
+            tiles = [];
+            for (let i = 0; i < size * size; i++) {
+                board.push(i); // 0 representa o espaço vazio
+            }
+        }
 
-            // Selecionar 8 emojis aleatórios (16 no total para pares)
-            const selectedEmojis = [];
-            while (selectedEmojis.length < 8) {
-                const randomIndex = Math.floor(Math.random() * allEmojis.length);
-                const emoji = allEmojis[randomIndex];
-                if (!selectedEmojis.includes(emoji)) {
-                    selectedEmojis.push(emoji);
+        function shuffleBoard() {
+            // Embaralha o tabuleiro de forma que seja solucionável
+            do {
+                for (let i = board.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [board[i], board[j]] = [board[j], board[i]];
+                }
+            } while (!isSolvable(board));
+        }
+
+        function isSolvable(board) {
+            let inversions = 0;
+            for (let i = 0; i < board.length; i++) {
+                for (let j = i + 1; j < board.length; j++) {
+                    if (board[i] > board[j] && board[i] !== 0 && board[j] !== 0) {
+                        inversions++;
+                    }
                 }
             }
-            const gameEmojis = [...selectedEmojis, ...selectedEmojis].sort(() => 0.5 - Math.random());
-
-            // Criar cartas com posições iniciais para animação
-            gameEmojis.forEach((emoji, index) => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.emoji = emoji;
-                card.dataset.index = index;
-                const row = Math.floor(index / 4);
-                const col = index % 4;
-                card.style.left = `${col * (tileSize + gap)}px`; // 80px (card) + 5px (gap) ou 60px + 5px
-                card.style.top = `${row * (tileSize + gap)}px`;
-                card.addEventListener('click', flipCard);
-                grid.appendChild(card);
-                cards.push({ element: card, emoji: emoji, flipped: false, matched: false });
-            });
-
-            // Mostrar todas as cartas por 3 segundos com animação
-            cards.forEach(card => {
-                card.element.classList.add('initial-show');
-                card.element.textContent = card.emoji;
-            });
-            setTimeout(() => {
-                cards.forEach(card => {
-                    card.element.classList.remove('initial-show');
-                    card.element.textContent = '';
-                });
-            }, 3000); // 3 segundos
+            // No tabuleiro 4x4, o número de inversões deve ser par para ser solucionável
+            return inversions % 2 === 0;
         }
 
-        function flipCard() {
-            const index = parseInt(this.dataset.index);
-            if (cards[index].flipped || cards[index].matched || flippedCards.length >= 2) return;
+        function renderBoard() {
+            grid.innerHTML = ''; // Limpar o grid
+            tiles = []; // Limpar o array de tiles
 
-            cards[index].flipped = true;
-            cards[index].element.classList.add('flipped');
-            cards[index].element.textContent = cards[index].emoji;
-            flippedCards.push(cards[index]);
+            board.forEach((number, index) => {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                if (number === 0) {
+                    tile.classList.add('empty');
+                } else {
+                    tile.textContent = number;
+                }
+                tile.dataset.index = index;
+                tile.dataset.number = number;
 
-            if (flippedCards.length === 2) {
+                // Calcular posição para animação
+                const row = Math.floor(index / size);
+                const col = index % size;
+                tile.style.left = `${col * (tileSize + gap)}px`;
+                tile.style.top = `${row * (tileSize + gap)}px`;
+
+                // Adicionar evento de clique apenas para peças não vazias
+                if (number !== 0) {
+                    tile.addEventListener('click', () => moveTile(index));
+                }
+
+                grid.appendChild(tile);
+                tiles[number] = tile; // Armazenar a peça
+            });
+        }
+
+        function moveTile(index) {
+            const emptyIndex = board.indexOf(0);
+            if (canMove(index, emptyIndex)) {
+                // Animação: mover a peça clicada e o espaço vazio
+                const tile = tiles[board[index]];
+                const emptyTile = tiles[0];
+
+                const row = Math.floor(index / size);
+                const col = index % size;
+                const emptyRow = Math.floor(emptyIndex / size);
+                const emptyCol = emptyIndex % size;
+
+                // Atualizar posições para animação
+                tile.style.left = `${emptyCol * (tileSize + gap)}px`;
+                tile.style.top = `${emptyRow * (tileSize + gap)}px`;
+                emptyTile.style.left = `${col * (tileSize + gap)}px`;
+                emptyTile.style.top = `${row * (tileSize + gap)}px`;
+
+                // Atualizar o array board
+                [board[index], board[emptyIndex]] = [board[emptyIndex], board[index]];
+
+                // Atualizar os tiles
+                tiles[board[index]] = tile;
+                tiles[board[emptyIndex]] = emptyTile;
+
                 moves++;
                 movesDisplay.textContent = `Jogadas: ${moves}`;
-                checkMatch();
+
+                // Renderizar novamente após a animação
+                setTimeout(() => {
+                    renderBoard();
+                    checkWin();
+                }, 200); // Tempo da animação (0.2s)
             }
         }
 
-        function checkMatch() {
-            const [card1, card2] = flippedCards;
-            if (card1.emoji === card2.emoji) {
-                card1.matched = card2.matched = true;
-                card1.element.classList.add('matched');
-                card2.element.classList.add('matched');
-                matchedPairs++;
-                flippedCards = [];
-                if (matchedPairs === 8) {
-                    document.getElementById('finalMoves').textContent = moves;
-                    document.getElementById('winModal').style.display = 'flex';
-                }
-            } else {
-                setTimeout(() => {
-                    card1.flipped = card2.flipped = false;
-                    card1.element.classList.remove('flipped');
-                    card2.element.classList.remove('flipped');
-                    card1.element.textContent = '';
-                    card2.element.textContent = '';
-                    flippedCards = [];
-                }, 1000);
+        function canMove(index, emptyIndex) {
+            const row = Math.floor(index / size);
+            const col = index % size;
+            const emptyRow = Math.floor(emptyIndex / size);
+            const emptyCol = emptyIndex % size;
+
+            // Verifica se o movimento é para uma posição adjacente (cima, baixo, esquerda, direita)
+            return (row === emptyRow && Math.abs(col - emptyCol) === 1) ||
+                   (col === emptyCol && Math.abs(row - emptyRow) === 1);
+        }
+
+        function checkWin() {
+            const winningBoard = [];
+            for (let i = 1; i < size * size; i++) {
+                winningBoard.push(i);
+            }
+            winningBoard.push(0); // Última posição é o espaço vazio
+
+            if (board.every((val, idx) => val === winningBoard[idx])) {
+                document.getElementById('finalMoves').textContent = moves;
+                document.getElementById('winModal').style.display = 'flex';
             }
         }
-    
     </script>
 </body>
 </html>

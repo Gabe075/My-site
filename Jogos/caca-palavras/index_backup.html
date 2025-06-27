@@ -2,12 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caça-Palavras</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../common.css">
     <style>
-        
         * {
             margin: 0;
             padding: 0;
@@ -233,16 +230,10 @@
                 font-size: 0.9em;
             }
         }
-    
     </style>
 </head>
-<body class="game-container">
-    <div class="game-wrapper">
-        <h1 class="game-title">Caça-Palavras</h1>
-        <p class="game-subtitle">Encontre as palavras escondidas!</p>
-        
-        <div class="game-area">
-            <div class="hamburger" onclick="toggleSidebar()">☰</div>
+<body>
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
     <div class="sidebar" id="sidebar">
         <a href="#" onclick="resetGame()">🔄 Novo Jogo</a>
     </div>
@@ -272,16 +263,8 @@
             <button onclick="startGame()">Novo Jogo</button>
         </div>
     </div>
-        </div>
-        
-        <div class="game-controls">
-            
-        </div>
-    </div>
-    
-    <script src="../common.js"></script>
+
     <script>
-        
         // Lista de palavras
         const words = [
             "SOL", "LUA", "RIO", "FLOR", "CASA", "GATO", "CAO", "BOLA", "MESA", "LIVRO",
@@ -639,7 +622,6 @@
             event.preventDefault();
             endSelection();
         }
-    
     </script>
 </body>
 </html>
