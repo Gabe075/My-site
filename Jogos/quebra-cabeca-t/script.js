@@ -1,34 +1,31 @@
 let board = [];
 let pieceBank = [];
 let moves = 0;
-let currentImage = 'images/puzzle_image1.png';
+let currentImage = 'puzzle_image1.png';
 let currentDifficulty = 4; // Padrão: 4x4
 let selectedPiece = null;
 let selectedGridIndex = null; // Para rastrear peça selecionada no grid
 const grid = document.getElementById('grid');
 const pieceBankElement = document.getElementById('piece-bank');
 const movesDisplay = document.getElementById('moves');
-const timeDisplay = document.getElementById('time');
-let timerInterval;
-let seconds = 0;
-
-// Lista de todas as imagens disponíveis
-const allImages = [
-    'images/puzzle_image1.png',
-    'images/puzzle_image2.png',
-    'images/puzzle_image3.png',
-    'images/puzzle_image4.jpg',
-    'images/puzzle_image5.jpg',
-    'images/puzzle_image6.png',
-    'images/puzzle_image7.jpg',
-    'images/puzzle_image8.jpg',
-    'images/puzzle_image9.jpg',
-    'images/puzzle_image10.jpg'
-];
+const referencePreview = document.getElementById('reference-preview');
 
 // Pré-carregar imagens
 const preloadImages = () => {
-    allImages.forEach(src => {
+    const images = [
+        'images/background.png',
+        'images/puzzle_image1.png',
+        'images/puzzle_image2.png',
+        'images/puzzle_image3.png',
+        'images/puzzle_image4.jpg',
+        'images/puzzle_image5.jpg',
+        'images/puzzle_image6.jpg',
+        'images/puzzle_image7.jpg',
+        'images/puzzle_image8.jpg',
+        'images/puzzle_image9.jpg',
+        'images/puzzle_image10.jpg'
+    ];
+    images.forEach(src => {
         const img = new Image();
         img.src = src;
     });
@@ -37,93 +34,76 @@ const preloadImages = () => {
 // Inicializar modal de início
 document.addEventListener('DOMContentLoaded', () => {
     preloadImages();
-    populateImageSelector();
-    selectImage(currentImage); // Seleciona a imagem padrão ao carregar
+    document.getElementById('startModal').style.display = 'flex';
+    document.querySelectorAll('.image-option').forEach(option => {
+        const imageSrc = option.dataset.image;
+        option.style.backgroundImage = `url(images/${imageSrc})`;
+    });
+    // Selecionar primeira imagem por padrão
+    selectImage('puzzle_image1.png');
 });
 
-// Funções do modal de imagem
-function showImageSelector() {
-    document.getElementById('imageModal').style.display = 'flex';
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
 }
 
-function closeImageModal() {
-    document.getElementById('imageModal').style.display = 'none';
-}
-
-function populateImageSelector() {
-    const imageSelectorDiv = document.getElementById('imageSelector');
-    imageSelectorDiv.innerHTML = '';
-    allImages.forEach(imgSrc => {
-        const option = document.createElement('div');
-        option.classList.add('image-option');
-        option.style.backgroundImage = `url(${imgSrc})`;
-        option.dataset.image = imgSrc;
-        option.onclick = () => selectImage(imgSrc);
-        imageSelectorDiv.appendChild(option);
-    });
-    // Seleciona a imagem atual
-    const currentSelection = imageSelectorDiv.querySelector(`[data-image="${currentImage}"]`);
-    if (currentSelection) {
-        currentSelection.classList.add('selected');
-    }
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
 }
 
 function selectImage(imageSrc) {
     currentImage = imageSrc;
     document.querySelectorAll('.image-option').forEach(option => {
-        option.classList.remove('selected');
+        option.classList.remove('active');
     });
-    document.querySelector(`[data-image="${imageSrc}"]`).classList.add('selected');
-    document.getElementById('reference-image').style.backgroundImage = `url(${currentImage})`;
+    document.querySelector(`[data-image="${imageSrc}"]`).classList.add('active');
+    
+    // Atualizar imagem de referência
+    if (referencePreview) {
+        referencePreview.style.backgroundImage = `url(images/${imageSrc})`;
+    }
 }
 
-function confirmImageSelection() {
-    closeImageModal();
-    startGame();
-}
-
-// Funções do modal de vitória
-function closeWinModal() {
-    document.getElementById('winModal').style.display = 'none';
-    startGame(); // Inicia um novo jogo após fechar o modal de vitória
+function selectDifficulty(size) {
+    currentDifficulty = size;
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`diff-${size}`).classList.add('active');
 }
 
 function startGame() {
-    clearInterval(timerInterval);
-    seconds = 0;
-    timeDisplay.textContent = '00:00';
-    timerInterval = setInterval(updateTimer, 1000);
-
+    closeModal('startModal');
+    closeModal('winModal');
+    grid.innerHTML = '';
+    pieceBankElement.innerHTML = '';
     moves = 0;
-    movesDisplay.textContent = `Jogadas: ${moves}`;
     selectedPiece = null;
     selectedGridIndex = null;
+    movesDisplay.textContent = `Jogadas: ${moves}`;
     
-    const size = currentDifficulty;
-    const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
-    const gridSizePx = tileSize * size;
+    // Atualizar imagem de referência
+    referencePreview.style.backgroundImage = `url(images/${currentImage})`;
     
-    grid.style.width = `${gridSizePx}px`;
-    grid.style.height = `${gridSizePx}px`;
-    grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    const tileSize = window.innerWidth <= 480 ? 240 / currentDifficulty : 
+                    window.innerWidth <= 768 ? 280 / currentDifficulty : 
+                    320 / currentDifficulty;
+    const gridSize = tileSize * currentDifficulty;
     
-    document.getElementById('reference-image').style.backgroundImage = `url(${currentImage})`;
-
+    grid.style.width = `${gridSize}px`;
+    grid.style.height = `${gridSize}px`;
+    grid.style.gridTemplateColumns = `repeat(${currentDifficulty}, 1fr)`;
+    grid.style.setProperty('--size', currentDifficulty);
+    
     initializeBoard();
     initializePieceBank();
     renderBoard();
     renderPieceBank();
 }
 
-function updateTimer() {
-    seconds++;
-    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const secs = (seconds % 60).toString().padStart(2, '0');
-    timeDisplay.textContent = `${minutes}:${secs}`;
-}
-
 function initializeBoard() {
     board = Array(currentDifficulty * currentDifficulty).fill(null); // Grid vazio
+    console.log('Tabuleiro inicializado:', board); // Debug
 }
 
 function initializePieceBank() {
@@ -137,16 +117,19 @@ function initializePieceBank() {
         const j = Math.floor(Math.random() * (i + 1));
         [pieceBank[i], pieceBank[j]] = [pieceBank[j], pieceBank[i]];
     }
+    console.log('Banca de peças inicializada:', pieceBank); // Debug
 }
 
 function renderBoard() {
     grid.innerHTML = ''; // Limpar o grid
     const size = currentDifficulty;
-    const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
+    const tileSize = window.innerWidth <= 480 ? 240 / size : 
+                    window.innerWidth <= 768 ? 280 / size : 
+                    320 / size;
 
     board.forEach((number, index) => {
         const tile = document.createElement('div');
-        tile.classList.add('puzzle-piece');
+        tile.classList.add('tile');
         tile.style.width = `${tileSize}px`;
         tile.style.height = `${tileSize}px`;
         
@@ -160,7 +143,7 @@ function renderBoard() {
         } else {
             const originalRow = Math.floor((number - 1) / size);
             const originalCol = (number - 1) % size;
-            tile.style.backgroundImage = `url(${currentImage})`;
+            tile.style.backgroundImage = `url(images/${currentImage})`;
             tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
             tile.style.backgroundSize = `${size * 100}%`;
             tile.style.zIndex = 100 - number;
@@ -180,22 +163,24 @@ function renderBoard() {
         tile.dataset.number = number || 0;
         grid.appendChild(tile);
     });
+    console.log('Tabuleiro renderizado:', board); // Debug
 }
 
 function renderPieceBank() {
     pieceBankElement.innerHTML = ''; // Limpar a banca
     const size = currentDifficulty;
-    const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
+    const bankTileSize = window.innerWidth <= 480 ? 40 : 
+                       window.innerWidth <= 768 ? 50 : 60;
 
     pieceBank.forEach(number => {
         const tile = document.createElement('div');
-        tile.classList.add('puzzle-piece', 'bank-tile');
-        tile.style.width = `${tileSize}px`;
-        tile.style.height = `${tileSize}px`;
+        tile.classList.add('tile', 'bank-tile');
+        tile.style.width = `${bankTileSize}px`;
+        tile.style.height = `${bankTileSize}px`;
         
         const originalRow = Math.floor((number - 1) / size);
         const originalCol = (number - 1) % size;
-        tile.style.backgroundImage = `url(${currentImage})`;
+        tile.style.backgroundImage = `url(images/${currentImage})`;
         tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
         tile.style.backgroundSize = `${size * 100}%`;
         tile.style.zIndex = 100 - number;
@@ -208,13 +193,16 @@ function renderPieceBank() {
         });
         
         if (selectedPiece === number) {
-            tile.style.border = '2px solid var(--accent-color)';
+            tile.style.border = '3px solid var(--primary-color)';
+            tile.style.boxShadow = '0 0 15px rgba(99, 102, 241, 0.5)';
         } else {
-            tile.style.border = 'none';
+            tile.style.border = '2px solid transparent';
+            tile.style.boxShadow = 'var(--shadow-md)';
         }
         
         pieceBankElement.appendChild(tile);
     });
+    console.log('Banca renderizada:', pieceBank); // Debug
 }
 
 function selectPiece(number) {
@@ -222,6 +210,7 @@ function selectPiece(number) {
     selectedGridIndex = null; // Desmarcar peça no grid
     renderBoard();
     renderPieceBank();
+    console.log('Peça selecionada da banca:', number); // Debug
 }
 
 function placePiece(index) {
@@ -231,6 +220,8 @@ function placePiece(index) {
     pieceBank = pieceBank.filter(num => num !== selectedPiece);
     moves++;
     movesDisplay.textContent = `Jogadas: ${moves}`;
+    console.log('Peça posicionada:', selectedPiece, 'no índice', index); // Debug
+    console.log('Estado atual - Board:', board, 'PieceBank:', pieceBank); // Debug
     
     selectedPiece = null;
     renderBoard();
@@ -245,6 +236,7 @@ function movePieceInGrid(index) {
             [board[index], board[selectedGridIndex]] = [board[selectedGridIndex], board[index]];
             moves++;
             movesDisplay.textContent = `Jogadas: ${moves}`;
+            console.log('Peça movida no grid:', board[selectedGridIndex], 'de', selectedGridIndex, 'para', index); // Debug
             selectedGridIndex = null;
             renderBoard();
             renderPieceBank();
@@ -257,18 +249,21 @@ function movePieceInGrid(index) {
         // Seleciona a peça no grid
         selectedGridIndex = index;
         selectedPiece = null; // Desmarcar peça da banca
+        console.log('Peça selecionada no grid:', board[index], 'no índice', index); // Debug
     } else if (selectedGridIndex === index) {
         // Se clicar na mesma peça, devolve pra banca
         pieceBank.push(board[index]);
         board[index] = null;
         moves++;
         movesDisplay.textContent = `Jogadas: ${moves}`;
+        console.log('Peça devolvida à banca:', board[index], 'do índice', index); // Debug
         selectedGridIndex = null;
     } else {
         // Troca as peças no grid
         [board[index], board[selectedGridIndex]] = [board[selectedGridIndex], board[index]];
         moves++;
         movesDisplay.textContent = `Jogadas: ${moves}`;
+        console.log('Peça movida no grid:', board[selectedGridIndex], 'de', selectedGridIndex, 'para', index); // Debug
         selectedGridIndex = null;
     }
     
@@ -289,14 +284,11 @@ function checkWin() {
     const isCorrect = board.every((val, idx) => val === winningBoard[idx]);
     
     if (isComplete && isCorrect) {
-        clearInterval(timerInterval);
         document.getElementById('finalMoves').textContent = moves;
-        document.getElementById('finalTime').textContent = timeDisplay.textContent;
         document.getElementById('winModal').style.display = 'flex';
+        console.log('Vitória detectada:', board); // Debug
+    } else {
+        console.log('Ainda não venceu - Completo:', isComplete, 'Correto:', isCorrect); // Debug
     }
 }
-
-// Inicializa o jogo com a dificuldade padrão
-startGame();
-
 
