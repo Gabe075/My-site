@@ -1,284 +1,216 @@
-let board = [];
-let pieceBank = [];
-let moves = 0;
-let currentImage = 'puzzle_image1.png';
-let currentDifficulty = 4; // Padrão: 4x4
-let selectedPiece = null;
-let selectedGridIndex = null; // Para rastrear peça selecionada no grid
-const grid = document.getElementById('grid');
-const pieceBankElement = document.getElementById('piece-bank');
-const movesDisplay = document.getElementById('moves');
+document.addEventListener("DOMContentLoaded", () => {
+    const difficultySelect = document.getElementById("difficultySelect");
+    const puzzleGrid = document.getElementById("puzzleGrid");
+    const referenceImage = document.getElementById("referenceImage");
+    const moveCountSpan = document.getElementById("moveCount");
+    const timeCountSpan = document.getElementById("timeCount");
+    const imageModal = document.getElementById("imageModal");
+    const imageSelector = document.getElementById("imageSelector");
+    const winModal = document.getElementById("winModal");
+    const finalMovesSpan = document.getElementById("finalMoves");
+    const finalTimeSpan = document.getElementById("finalTime");
 
-// Pré-carregar imagens
-const preloadImages = () => {
+    let gridSize = 4;
+    let moves = 0;
+    let timer;
+    let seconds = 0;
+    let emptyTile = {};
+    let puzzlePieces = [];
+    let selectedImage = "images/puzzle_image1.png";
+
     const images = [
-        'images/background.png',
-        'images/puzzle_image1.png',
-        'images/puzzle_image2.png',
-        'images/puzzle_image3.png'
+        "images/jungle_animals.jpg",
+        "images/africa_animals.jpg",
+        "images/mountain_lake.jpg",
+        "images/mountain_cottage.jpg",
+        "images/beautiful_landscape.jpg",
+        "images/cozy_porch.jpg",
+        "images/autumn_porch.jpg",
+        "images/space_galaxy.jpg",
+        "images/underwater_world.jpg",
+        "images/fantasy_castle.jpg"
     ];
-    images.forEach(src => {
-        const img = new Image();
-        img.src = src;
-    });
-};
 
-// Inicializar modal de início
-document.addEventListener('DOMContentLoaded', () => {
-    preloadImages();
-    document.getElementById('startModal').style.display = 'flex';
-    document.querySelectorAll('.image-option').forEach(option => {
-        const imageSrc = option.dataset.image;
-        option.style.backgroundImage = `url(images/${imageSrc})`;
-    });
-});
-
-// Sidebar e eventos
-const hamburger = document.querySelector('.hamburger');
-const sidebar = document.getElementById('sidebar');
-if (hamburger && sidebar) {
-    hamburger.addEventListener('click', () => sidebar.classList.toggle('open'));
-    hamburger.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        sidebar.classList.toggle('open');
-    });
-    document.addEventListener('click', (event) => {
-        if (!event.target.closest('#sidebar') && !event.target.closest('.hamburger') && sidebar.classList.contains('open')) {
-            sidebar.classList.remove('open');
-        }
-    });
-}
-
-function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
-    sidebar.classList.remove('open');
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-}
-
-function selectImage(imageSrc) {
-    currentImage = imageSrc;
-    document.querySelectorAll('.image-option').forEach(option => {
-        option.classList.remove('active');
-    });
-    document.querySelector(`[data-image="${imageSrc}"]`).classList.add('active');
-}
-
-function selectDifficulty(size) {
-    currentDifficulty = size;
-    document.querySelectorAll('.difficulty-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.getElementById(`diff-${size}`).classList.add('active');
-}
-
-function startGame() {
-    closeModal('startModal');
-    closeModal('winModal');
-    grid.innerHTML = '';
-    pieceBankElement.innerHTML = '';
-    moves = 0;
-    selectedPiece = null;
-    selectedGridIndex = null;
-    movesDisplay.textContent = `Jogadas: ${moves}`;
-    
-    const tileSize = window.innerWidth <= 600 ? 240 / currentDifficulty : 320 / currentDifficulty;
-    const gridSize = tileSize * currentDifficulty;
-    
-    grid.style.width = `${gridSize}px`;
-    grid.style.height = `${gridSize}px`;
-    grid.style.gridTemplateColumns = `repeat(${currentDifficulty}, 1fr)`;
-    
-    initializeBoard();
-    initializePieceBank();
-    renderBoard();
-    renderPieceBank();
-}
-
-function initializeBoard() {
-    board = Array(currentDifficulty * currentDifficulty).fill(null); // Grid vazio
-    console.log('Tabuleiro inicializado:', board); // Debug
-}
-
-function initializePieceBank() {
-    pieceBank = [];
-    const totalTiles = currentDifficulty * currentDifficulty;
-    for (let i = 1; i <= totalTiles; i++) {
-        pieceBank.push(i);
+    function init() {
+        gridSize = parseInt(difficultySelect.value);
+        populateImageSelector();
+        startNewGame();
     }
-    // Embaralhar peças
-    for (let i = pieceBank.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pieceBank[i], pieceBank[j]] = [pieceBank[j], pieceBank[i]];
-    }
-    console.log('Banca de peças inicializada:', pieceBank); // Debug
-}
 
-function renderBoard() {
-    grid.innerHTML = ''; // Limpar o grid
-    const size = currentDifficulty;
-    const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
-
-    board.forEach((number, index) => {
-        const tile = document.createElement('div');
-        tile.classList.add('tile');
-        tile.style.width = `${tileSize}px`;
-        tile.style.height = `${tileSize}px`;
-        
-        if (number === null) {
-            tile.classList.add('empty');
-            tile.addEventListener('click', () => placePiece(index));
-            tile.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                placePiece(index);
-            });
-        } else {
-            const originalRow = Math.floor((number - 1) / size);
-            const originalCol = (number - 1) % size;
-            tile.style.backgroundImage = `url(images/${currentImage})`;
-            tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
-            tile.style.backgroundSize = `${size * 100}%`;
-            tile.style.zIndex = 100 - number;
-            // Adicionar evento pra mover peça no grid
-            tile.addEventListener('click', () => movePieceInGrid(index));
-            tile.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                movePieceInGrid(index);
-            });
-        }
-        
-        if (selectedGridIndex === index) {
-            tile.classList.add('selected');
-        }
-        
-        tile.dataset.index = index;
-        tile.dataset.number = number || 0;
-        grid.appendChild(tile);
-    });
-    console.log('Tabuleiro renderizado:', board); // Debug
-}
-
-function renderPieceBank() {
-    pieceBankElement.innerHTML = ''; // Limpar a banca
-    const size = currentDifficulty;
-    const tileSize = window.innerWidth <= 600 ? 240 / size : 320 / size;
-
-    pieceBank.forEach(number => {
-        const tile = document.createElement('div');
-        tile.classList.add('tile', 'bank-tile');
-        tile.style.width = `${tileSize}px`;
-        tile.style.height = `${tileSize}px`;
-        
-        const originalRow = Math.floor((number - 1) / size);
-        const originalCol = (number - 1) % size;
-        tile.style.backgroundImage = `url(images/${currentImage})`;
-        tile.style.backgroundPosition = `${(originalCol * 100) / (size - 1)}% ${(originalRow * 100) / (size - 1)}%`;
-        tile.style.backgroundSize = `${size * 100}%`;
-        tile.style.zIndex = 100 - number;
-        
-        tile.dataset.number = number;
-        tile.addEventListener('click', () => selectPiece(number));
-        tile.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            selectPiece(number);
+    function populateImageSelector() {
+        imageSelector.innerHTML = "";
+        images.forEach(img => {
+            const option = document.createElement("div");
+            option.classList.add("image-option");
+            option.style.backgroundImage = `url(${img})`;
+            option.dataset.image = img;
+            option.onclick = () => selectImage(img);
+            imageSelector.appendChild(option);
         });
-        
-        if (selectedPiece === number) {
-            tile.style.border = '2px solid #4db6ac';
-        } else {
-            tile.style.border = 'none';
+    }
+
+    window.showImageSelector = () => {
+        imageModal.style.display = "flex";
+        const currentSelection = imageSelector.querySelector(`[data-image="${selectedImage}"]`);
+        if (currentSelection) {
+            currentSelection.classList.add("selected");
         }
-        
-        pieceBankElement.appendChild(tile);
-    });
-    console.log('Banca renderizada:', pieceBank); // Debug
-}
+    };
 
-function selectPiece(number) {
-    selectedPiece = number;
-    selectedGridIndex = null; // Desmarcar peça no grid
-    renderBoard();
-    renderPieceBank();
-    console.log('Peça selecionada da banca:', number); // Debug
-}
+    window.closeImageModal = () => {
+        imageModal.style.display = "none";
+    };
 
-function placePiece(index) {
-    if (selectedPiece === null || board[index] !== null) return;
-    
-    board[index] = selectedPiece;
-    pieceBank = pieceBank.filter(num => num !== selectedPiece);
-    moves++;
-    movesDisplay.textContent = `Jogadas: ${moves}`;
-    console.log('Peça posicionada:', selectedPiece, 'no índice', index); // Debug
-    console.log('Estado atual - Board:', board, 'PieceBank:', pieceBank); // Debug
-    
-    selectedPiece = null;
-    renderBoard();
-    renderPieceBank();
-    checkWin();
-}
+    window.selectImage = (img) => {
+        const options = imageSelector.querySelectorAll(".image-option");
+        options.forEach(opt => opt.classList.remove("selected"));
+        const newSelection = imageSelector.querySelector(`[data-image="${img}"]`);
+        if (newSelection) {
+            newSelection.classList.add("selected");
+        }
+        selectedImage = img;
+    };
 
-function movePieceInGrid(index) {
-    if (board[index] === null) {
-        // Se clicar numa célula vazia e tiver uma peça selecionada no grid, move pra lá
-        if (selectedGridIndex !== null) {
-            [board[index], board[selectedGridIndex]] = [board[selectedGridIndex], board[index]];
+    window.confirmImageSelection = () => {
+        closeImageModal();
+        startNewGame();
+    };
+
+    window.startNewGame = () => {
+        gridSize = parseInt(difficultySelect.value);
+        moves = 0;
+        seconds = 0;
+        clearInterval(timer);
+        updateStats();
+        timer = setInterval(() => {
+            seconds++;
+            updateStats();
+        }, 1000);
+
+        referenceImage.style.backgroundImage = `url(${selectedImage})`;
+        createPuzzle();
+    };
+
+    function createPuzzle() {
+        puzzleGrid.innerHTML = "";
+        puzzlePieces = [];
+        const pieceSize = 100 / gridSize;
+
+        for (let i = 0; i < gridSize * gridSize; i++) {
+            const piece = document.createElement("div");
+            piece.classList.add("puzzle-piece");
+            piece.style.width = `${pieceSize}%`;
+            piece.style.height = `${pieceSize}%`;
+            piece.style.backgroundImage = `url(${selectedImage})`;
+            
+            const row = Math.floor(i / gridSize);
+            const col = i % gridSize;
+            
+            piece.style.backgroundPosition = `${col * 100 / (gridSize - 1)}% ${row * 100 / (gridSize - 1)}%`;
+            piece.style.backgroundSize = `${gridSize * 100}%`;
+            
+            piece.dataset.index = i;
+            piece.onclick = () => movePiece(piece);
+            
+            puzzlePieces.push({ element: piece, originalIndex: i });
+            puzzleGrid.appendChild(piece);
+        }
+
+        puzzlePieces[puzzlePieces.length - 1].element.classList.add("empty");
+        emptyTile = { 
+            element: puzzlePieces[puzzlePieces.length - 1].element,
+            currentIndex: puzzlePieces.length - 1
+        };
+
+        shufflePuzzle();
+    }
+
+    function shufflePuzzle() {
+        for (let i = 0; i < 1000; i++) {
+            const neighbors = getNeighbors(emptyTile.currentIndex);
+            const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+            swapPieces(emptyTile.currentIndex, randomNeighbor);
+        }
+        moves = 0; // Reset moves after shuffling
+        updateStats();
+    }
+
+    function movePiece(piece) {
+        const pieceIndex = parseInt(piece.dataset.index);
+        if (isNeighbor(pieceIndex, emptyTile.currentIndex)) {
+            swapPieces(pieceIndex, emptyTile.currentIndex);
             moves++;
-            movesDisplay.textContent = `Jogadas: ${moves}`;
-            console.log('Peça movida no grid:', board[selectedGridIndex], 'de', selectedGridIndex, 'para', index); // Debug
-            selectedGridIndex = null;
-            renderBoard();
-            renderPieceBank();
+            updateStats();
             checkWin();
         }
-        return;
     }
-    
-    if (selectedGridIndex === null) {
-        // Seleciona a peça no grid
-        selectedGridIndex = index;
-        selectedPiece = null; // Desmarcar peça da banca
-        console.log('Peça selecionada no grid:', board[index], 'no índice', index); // Debug
-    } else if (selectedGridIndex === index) {
-        // Se clicar na mesma peça, devolve pra banca
-        pieceBank.push(board[index]);
-        board[index] = null;
-        moves++;
-        movesDisplay.textContent = `Jogadas: ${moves}`;
-        console.log('Peça devolvida à banca:', board[index], 'do índice', index); // Debug
-        selectedGridIndex = null;
-    } else {
-        // Troca as peças no grid
-        [board[index], board[selectedGridIndex]] = [board[selectedGridIndex], board[index]];
-        moves++;
-        movesDisplay.textContent = `Jogadas: ${moves}`;
-        console.log('Peça movida no grid:', board[selectedGridIndex], 'de', selectedGridIndex, 'para', index); // Debug
-        selectedGridIndex = null;
-    }
-    
-    renderBoard();
-    renderPieceBank();
-    checkWin();
-}
 
-function checkWin() {
-    const size = currentDifficulty;
-    const totalTiles = size * size;
-    const winningBoard = [];
-    for (let i = 1; i <= totalTiles; i++) {
-        winningBoard.push(i);
+    function swapPieces(index1, index2) {
+        const piece1 = puzzlePieces.find(p => parseInt(p.element.dataset.index) === index1);
+        const piece2 = puzzlePieces.find(p => parseInt(p.element.dataset.index) === index2);
+
+        const tempIndex = piece1.element.dataset.index;
+        piece1.element.dataset.index = piece2.element.dataset.index;
+        piece2.element.dataset.index = tempIndex;
+
+        const tempLeft = piece1.element.style.left;
+        const tempTop = piece1.element.style.top;
+        piece1.element.style.left = piece2.element.style.left;
+        piece1.element.style.top = piece2.element.style.top;
+        piece2.element.style.left = tempLeft;
+        piece2.element.style.top = tempTop;
+
+        if (piece1.element.classList.contains("empty")) {
+            emptyTile.currentIndex = index2;
+        } else if (piece2.element.classList.contains("empty")) {
+            emptyTile.currentIndex = index1;
+        }
     }
-    
-    const isComplete = board.every(val => val !== null);
-    const isCorrect = board.every((val, idx) => val === winningBoard[idx]);
-    
-    if (isComplete && isCorrect) {
-        document.getElementById('finalMoves').textContent = moves;
-        document.getElementById('winModal').style.display = 'flex';
-        console.log('Vitória detectada:', board); // Debug
-    } else {
-        console.log('Ainda não venceu - Completo:', isComplete, 'Correto:', isCorrect); // Debug
+
+    function getNeighbors(index) {
+        const neighbors = [];
+        const row = Math.floor(index / gridSize);
+        const col = index % gridSize;
+
+        if (row > 0) neighbors.push(index - gridSize); // Top
+        if (row < gridSize - 1) neighbors.push(index + gridSize); // Bottom
+        if (col > 0) neighbors.push(index - 1); // Left
+        if (col < gridSize - 1) neighbors.push(index + 1); // Right
+
+        return neighbors;
     }
-}
+
+    function isNeighbor(index1, index2) {
+        return getNeighbors(index2).includes(index1);
+    }
+
+    function updateStats() {
+        moveCountSpan.textContent = moves;
+        const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const secs = (seconds % 60).toString().padStart(2, "0");
+        timeCountSpan.textContent = `${minutes}:${secs}`;
+    }
+
+    function checkWin() {
+        for (let i = 0; i < puzzlePieces.length; i++) {
+            if (parseInt(puzzlePieces[i].element.dataset.index) !== puzzlePieces[i].originalIndex) {
+                return;
+            }
+        }
+        clearInterval(timer);
+        finalMovesSpan.textContent = moves;
+        finalTimeSpan.textContent = timeCountSpan.textContent;
+        winModal.style.display = "flex";
+    }
+
+    window.closeWinModal = () => {
+        winModal.style.display = "none";
+        startNewGame();
+    };
+
+    difficultySelect.addEventListener("change", startNewGame);
+
+    init();
+});
+
+

@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quebra-Cabeça de Imagem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../common.css">
     <style>
+        
         :root {
             --primary-color: #6366f1;
             --primary-dark: #4f46e5;
@@ -348,10 +350,16 @@
                 font-size: 2rem;
             }
         }
+    
     </style>
 </head>
-<body>
-    <a href="../../index.html" class="back-to-menu">
+<body class="game-container">
+    <div class="game-wrapper">
+        <h1 class="game-title">Quebra-Cabeça de Imagem</h1>
+        <p class="game-subtitle">Monte a imagem deslizando as peças!</p>
+        
+        <div class="game-area">
+            <a href="../../index.html" class="back-to-menu">
         <i class="fas fa-arrow-left"></i> Voltar ao Menu
     </a>
     
@@ -417,243 +425,16 @@
             <button onclick="closeWinModal()" class="difficulty-btn">Novo Jogo</button>
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
+    <script src="../common.js"></script>
     <script>
-        // Configurações do jogo
-        let currentImage = 'images/jungle_animals.jpg';
-        let gridSize = 4;
-        let puzzleBoard = [];
-        let moveCount = 0;
-        let startTime = null;
-        let gameTimer = null;
-        let selectedImageIndex = 0;
         
-        // Lista de imagens disponíveis
-        const availableImages = [
-            { src: 'images/jungle_animals.jpg', name: 'Animais da Selva' },
-            { src: 'images/africa_animals.jpg', name: 'Animais da África' },
-            { src: 'images/mountain_lake.jpg', name: 'Lago na Montanha' },
-            { src: 'images/mountain_cottage.jpg', name: 'Casa na Montanha' },
-            { src: 'images/beautiful_landscape.jpg', name: 'Paisagem Linda' },
-            { src: 'images/cozy_porch.jpg', name: 'Varanda Aconchegante' },
-            { src: 'images/autumn_porch.jpg', name: 'Varanda de Outono' },
-            { src: 'images/space_galaxy.jpg', name: 'Galáxia Espacial' },
-            { src: 'images/underwater_world.jpg', name: 'Mundo Submarino' },
-            { src: 'images/fantasy_castle.jpg', name: 'Castelo Fantástico' }
-        ];
-        
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            setupImageSelector();
-            updateReferenceImage();
-            showImageSelector();
-        });
-        
-        function setupImageSelector() {
-            const selector = document.getElementById('imageSelector');
-            selector.innerHTML = '';
-            
-            availableImages.forEach((image, index) => {
-                const option = document.createElement('div');
-                option.className = 'image-option';
-                option.style.backgroundImage = `url(${image.src})`;
-                option.title = image.name;
-                option.onclick = () => selectImage(index);
-                
-                if (index === selectedImageIndex) {
-                    option.classList.add('selected');
-                }
-                
-                selector.appendChild(option);
-            });
-        }
-        
-        function selectImage(index) {
-            selectedImageIndex = index;
-            document.querySelectorAll('.image-option').forEach((option, i) => {
-                option.classList.toggle('selected', i === index);
-            });
-        }
-        
-        function showImageSelector() {
-            document.getElementById('imageModal').style.display = 'flex';
-        }
-        
-        function closeImageModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-        
-        function confirmImageSelection() {
-            currentImage = availableImages[selectedImageIndex].src;
-            updateReferenceImage();
-            closeImageModal();
-            startNewGame();
-        }
-        
-        function updateReferenceImage() {
-            const referenceImg = document.getElementById('referenceImage');
-            referenceImg.style.backgroundImage = `url(${currentImage})`;
-        }
-        
-        function startNewGame() {
-            gridSize = parseInt(document.getElementById('difficultySelect').value);
-            moveCount = 0;
-            startTime = Date.now();
-            
-            updateMoveCount();
-            startTimer();
-            initializePuzzle();
-            shufflePuzzle();
-            renderPuzzle();
-        }
-        
-        function initializePuzzle() {
-            puzzleBoard = [];
-            for (let i = 0; i < gridSize * gridSize; i++) {
-                puzzleBoard.push(i);
-            }
-        }
-        
-        function shufflePuzzle() {
-            // Embaralha garantindo que seja solucionável
-            do {
-                for (let i = puzzleBoard.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [puzzleBoard[i], puzzleBoard[j]] = [puzzleBoard[j], puzzleBoard[i]];
-                }
-            } while (!isSolvable() || isSolved());
-        }
-        
-        function isSolvable() {
-            let inversions = 0;
-            const flatBoard = puzzleBoard.filter(num => num !== 0);
-            
-            for (let i = 0; i < flatBoard.length; i++) {
-                for (let j = i + 1; j < flatBoard.length; j++) {
-                    if (flatBoard[i] > flatBoard[j]) {
-                        inversions++;
-                    }
-                }
-            }
-            
-            if (gridSize % 2 === 1) {
-                return inversions % 2 === 0;
-            } else {
-                const emptyRow = Math.floor(puzzleBoard.indexOf(0) / gridSize);
-                return (inversions + emptyRow) % 2 === 1;
-            }
-        }
-        
-        function renderPuzzle() {
-            const grid = document.getElementById('puzzleGrid');
-            const pieceSize = Math.min(300 / gridSize, 80);
-            const gridPixelSize = pieceSize * gridSize;
-            
-            grid.style.width = `${gridPixelSize}px`;
-            grid.style.height = `${gridPixelSize}px`;
-            grid.innerHTML = '';
-            
-            puzzleBoard.forEach((pieceNumber, index) => {
-                const piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
-                
-                const row = Math.floor(index / gridSize);
-                const col = index % gridSize;
-                
-                piece.style.width = `${pieceSize}px`;
-                piece.style.height = `${pieceSize}px`;
-                piece.style.left = `${col * pieceSize}px`;
-                piece.style.top = `${row * pieceSize}px`;
-                
-                if (pieceNumber === 0) {
-                    piece.classList.add('empty');
-                } else {
-                    const originalRow = Math.floor((pieceNumber - 1) / gridSize);
-                    const originalCol = (pieceNumber - 1) % gridSize;
-                    
-                    const bgPosX = -(originalCol * pieceSize);
-                    const bgPosY = -(originalRow * pieceSize);
-                    const bgSize = pieceSize * gridSize;
-                    
-                    piece.style.backgroundImage = `url(${currentImage})`;
-                    piece.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-                    piece.style.backgroundSize = `${bgSize}px ${bgSize}px`;
-                    
-                    piece.onclick = () => movePiece(index);
-                }
-                
-                grid.appendChild(piece);
-            });
-        }
-        
-        function movePiece(clickedIndex) {
-            const emptyIndex = puzzleBoard.indexOf(0);
-            
-            if (canMove(clickedIndex, emptyIndex)) {
-                [puzzleBoard[clickedIndex], puzzleBoard[emptyIndex]] = [puzzleBoard[emptyIndex], puzzleBoard[clickedIndex]];
-                
-                moveCount++;
-                updateMoveCount();
-                renderPuzzle();
-                
-                if (isSolved()) {
-                    setTimeout(showWinModal, 300);
-                }
-            }
-        }
-        
-        function canMove(clickedIndex, emptyIndex) {
-            const clickedRow = Math.floor(clickedIndex / gridSize);
-            const clickedCol = clickedIndex % gridSize;
-            const emptyRow = Math.floor(emptyIndex / gridSize);
-            const emptyCol = emptyIndex % gridSize;
-            
-            const rowDiff = Math.abs(clickedRow - emptyRow);
-            const colDiff = Math.abs(clickedCol - emptyCol);
-            
-            return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
-        }
-        
-        function isSolved() {
-            for (let i = 0; i < puzzleBoard.length - 1; i++) {
-                if (puzzleBoard[i] !== i + 1) {
-                    return false;
-                }
-            }
-            return puzzleBoard[puzzleBoard.length - 1] === 0;
-        }
-        
-        function updateMoveCount() {
-            document.getElementById('moveCount').textContent = moveCount;
-        }
-        
-        function startTimer() {
-            if (gameTimer) clearInterval(gameTimer);
-            
-            gameTimer = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-                const seconds = (elapsed % 60).toString().padStart(2, '0');
-                document.getElementById('timeCount').textContent = `${minutes}:${seconds}`;
-            }, 1000);
-        }
-        
-        function showWinModal() {
-            clearInterval(gameTimer);
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-            const seconds = (elapsed % 60).toString().padStart(2, '0');
-            
-            document.getElementById('finalMoves').textContent = moveCount;
-            document.getElementById('finalTime').textContent = `${minutes}:${seconds}`;
-            document.getElementById('winModal').style.display = 'flex';
-        }
-        
-        function closeWinModal() {
-            document.getElementById('winModal').style.display = 'none';
-            showImageSelector();
-        }
     </script>
 </body>
 </html>
-

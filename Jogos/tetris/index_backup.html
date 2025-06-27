@@ -2,10 +2,12 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tetris</title>
-    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../common.css">
     <style>
+        
         * {
             margin: 0;
             padding: 0;
@@ -177,10 +179,16 @@
                 font-size: 1.2em;
             }
         }
+    
     </style>
 </head>
-<body>
-    <div class="hamburger">☰</div>
+<body class="game-container">
+    <div class="game-wrapper">
+        <h1 class="game-title">Tetris</h1>
+        <p class="game-subtitle">Encaixe as peças e complete as linhas!</p>
+        
+        <div class="game-area">
+            <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
         <a onclick="startGame()">🔄 Novo Jogo</a>
         <a onclick="togglePause()">⏯️ Pausar</a>
@@ -216,8 +224,16 @@
             <button onclick="startGame()">Novo Jogo</button>
         </div>
     </div>
-
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
+    
+    <script src="../common.js"></script>
     <script>
+        
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let scale = window.innerWidth <= 360 ? 20 : 24;
@@ -487,6 +503,7 @@
         } catch (error) {
             console.error('Erro:', error);
         }
+    
     </script>
 </body>
 </html>

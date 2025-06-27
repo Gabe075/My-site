@@ -2,9 +2,12 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Breakout Arkanoid</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../common.css">
     <style>
+        
         * {
             margin: 0;
             padding: 0;
@@ -212,10 +215,16 @@
             .modal-content p { font-size: 1em; }
             .modal-content button { padding: 10px 20px; font-size: 0.9em; }
         }
+    
     </style>
 </head>
-<body>
-    <div class="hamburger">☰</div>
+<body class="game-container">
+    <div class="game-wrapper">
+        <h1 class="game-title">Breakout Arkanoid</h1>
+        <p class="game-subtitle">Quebre os blocos rebatendo a bola!</p>
+        
+        <div class="game-area">
+            <div class="hamburger">☰</div>
     <div class="sidebar" id="sidebar">
         <a onclick="resetAndShowStartModal()">🔄 Novo Jogo</a>
         </div>
@@ -249,7 +258,16 @@
             <button onclick="resetAndShowStartModal()">Jogar Novamente</button>
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
+    
+    <script src="../common.js"></script>
     <script>
+        
         // Game Elements
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -627,7 +645,7 @@
             resetAndShowStartModal(); 
         });
 
+    
     </script>
 </body>
 </html>
-

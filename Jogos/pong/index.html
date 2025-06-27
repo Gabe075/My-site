@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../common.css">
     <style>
         
+        
         * {
             margin: 0;
             padding: 0;
@@ -237,10 +238,16 @@
             }
         }
     
+    
     </style>
 </head>
 <body class="game-container">
     <div class="game-wrapper">
+        <h1 class="game-title">Pong</h1>
+        <p class="game-subtitle">O clássico jogo de ping-pong!</p>
+        
+        <div class="game-area">
+            <div class="game-wrapper">
         <h1 class="game-title">Pong</h1>
         <p class="game-subtitle">O clássico jogo de ping-pong!</p>
         
@@ -298,9 +305,17 @@
             
         </div>
     </div>
+        </div>
+        
+        <div class="game-controls">
+            
+        </div>
+    </div>
     
     <script src="../common.js"></script>
     <script>
+        
+
         
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -500,6 +515,7 @@
             if (event.key === 'ArrowUp') isMovingUp = false;
             if (event.key === 'ArrowDown') isMovingDown = false;
         });
+    
     
     </script>
 </body>
